@@ -12,5 +12,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i("Test", "je préferais Pro Evolution Car");
+        Log.i("Test", "BILLY !");
     }
 }
