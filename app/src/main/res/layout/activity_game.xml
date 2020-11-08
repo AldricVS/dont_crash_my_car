@@ -8,24 +8,13 @@
     android:id="@+id/frameLayout">
 
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_square" />
+
+    <ImageView
         android:id="@+id/playerCar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/enemyCar1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/enemyCar2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/enemyCar3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
 
 </FrameLayout>

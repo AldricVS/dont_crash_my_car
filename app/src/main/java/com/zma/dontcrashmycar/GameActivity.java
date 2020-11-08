@@ -17,12 +17,15 @@ import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.zma.dontcrashmycar.game.BackgroundManager;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
     private final String TAG = "GameActivity";
+
+    private BackgroundManager backgroundManager;
 
     private FrameLayout frameLayout;
     private ImageView playerImage;
@@ -39,7 +42,7 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
+        frameLayout = findViewById(R.id.frameLayout);
         //init all dimensions used for displaying
         screenWidth = ScreenCalculator.getScreenWidth(this);
         screenHeight = ScreenCalculator.getScreenHeight(this);
@@ -48,18 +51,21 @@ public class GameActivity extends AppCompatActivity {
 
         Log.d(TAG, "sprite width = " + spriteWidth + " & sprite height = " + spriteHeight);
         Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
+
+        backgroundManager = new BackgroundManager(this, frameLayout);
         initSprites();
     }
 
     private void initSprites() {
         //load the player sprite
         playerImage = findViewById(R.id.playerCar);
-        playerImage.setImageDrawable(new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.car)));
+        playerImage.setImageDrawable(getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
         playerImage.getLayoutParams().width = spriteWidth;
         playerImage.getLayoutParams().height = spriteHeight;
         //put player at bottom center of the screen
-        playerImage.setY(screenHeight - 2 * spriteHeight / 3);
+        playerImage.setY(screenHeight - spriteHeight);
+        Log.i(TAG, "player down by " + backgroundManager.getSquareSizeY());
         playerImage.setX(screenWidth / 2 - spriteWidth / 2);
     }
 
@@ -77,5 +83,13 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
+    }
+
+    public int getScreenHeight(){
+        return screenHeight;
+    }
+
+    public int getScreenWidth(){
+        return screenWidth;
     }
 }
