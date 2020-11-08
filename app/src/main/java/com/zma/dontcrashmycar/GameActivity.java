@@ -58,9 +58,9 @@ public class GameActivity extends AppCompatActivity {
         //we have to set size of sprites depending on the screen size
         playerImage.getLayoutParams().width = spriteWidth;
         playerImage.getLayoutParams().height = spriteHeight;
-        int height = ScreenCalculator.getScreenHeight(this);
-        playerImage.setY(height - 2 * spriteHeight / 3);
-        playerImage.setX(ScreenCalculator.getScreenWidth(this) - spriteWidth);
+        //put player at bottom center of the screen
+        playerImage.setY(screenHeight - 2 * spriteHeight / 3);
+        playerImage.setX(screenWidth / 2 - spriteWidth / 2);
     }
 
     /**
