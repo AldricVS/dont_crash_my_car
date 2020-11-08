@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Don\'t crash my car</string>
+    <string name="titleLabel">Dont crash my car !</string>
+    <string name="creditsLabel">Published by ZMA</string>
+    <string name="playButtonLabel">Play</string>
+    <string name="carButtonLabel">Choose car</string>
+    <string name="scoresButtonLabel">High Scores</string>
+    <string name="exitButtonLabel">Exit</string>
 </resources>
