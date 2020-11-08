@@ -1,6 +1,7 @@
 package com.zma.dontcrashmycar.game;
 
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -19,7 +20,7 @@ public class BackgroundManager {
     private GameActivity activity;
 
     /*Change this to have different number of lines displayed on the road*/
-    private final int NUMBER_LINES_ON_ROAD = 7;
+    private final int NUMBER_LINES_ON_ROAD = 4;
     private ImageView squares[] = new ImageView[NUMBER_LINES_ON_ROAD];
 
     int squareSizeX;
@@ -28,13 +29,14 @@ public class BackgroundManager {
     /**
      * Scrolling speed in dp / sec. Bigger the number is, faster the scrolling will be
      */
-    private final int BACKGROUND_SPEED = 20;
+    private final int BACKGROUND_SPEED = 40;
 
-    public BackgroundManager(GameActivity activity, FrameLayout layout){
+    public BackgroundManager(GameActivity activity, FrameLayout layout, int carSpriteHeight){
         this.activity = activity;
+
         //create all squares needed, and set size and position
         squareSizeX = activity.getScreenWidth() / 7;
-        squareSizeY = (2 * activity.getScreenHeight()) / (3 * (NUMBER_LINES_ON_ROAD - 1));
+        squareSizeY = activity.getScreenHeight() / (NUMBER_LINES_ON_ROAD - 1) - carSpriteHeight;
         int halfSizeY = squareSizeY / 2;
         int posX = activity.getScreenWidth() / 2 - squareSizeX / 2;
         int posY = activity.getScreenHeight() - squareSizeY;
@@ -50,12 +52,15 @@ public class BackgroundManager {
             //positioning depends on the last positioned element
             //(the first line will be stuck at the bottom of the screen  and the last will be above screen)
             //but all will be at the middle of the screen
+            square.setZ(-1);
             square.setX(posX);
             square.setY(posY);
-            square.setZ(-1);
+
+            Log.d(TAG, "Square " + i + " at position Y=" +posY);
+
 
             //decrease position by [square height] + [half square height] in order to have space between each other (as in a real road)
-            posY -= squareSizeY + halfSizeY;
+            posY -= squareSizeY + carSpriteHeight;
 
             //add this view to the layout
             layout.addView(square);
@@ -63,21 +68,6 @@ public class BackgroundManager {
             squares[i] = square;
         }
 
-        // TODO : REMOVE IT ! the thread doesn't belongs here (just for testing)
-        new Thread(){
-            @Override
-            public void run() {
-                while(true) {
-                    nextStep();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }.start();
     }
 
     /**
@@ -89,7 +79,7 @@ public class BackgroundManager {
          */
         for (ImageView square : squares) {
             square.setY(square.getY() + BACKGROUND_SPEED);
-            if(square.getY() > activity.getScreenHeight()){
+            if(square.getY() > activity.getScreenHeight() + squareSizeY){
                 square.setY(-squareSizeY);
             }
         }

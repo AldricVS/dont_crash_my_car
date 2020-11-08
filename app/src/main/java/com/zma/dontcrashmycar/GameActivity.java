@@ -37,6 +37,7 @@ public class GameActivity extends AppCompatActivity {
     private int spriteWidth;
     private int spriteHeight;
 
+    private final int TIME_BETWEEN_FRAMES = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +53,29 @@ public class GameActivity extends AppCompatActivity {
         Log.d(TAG, "sprite width = " + spriteWidth + " & sprite height = " + spriteHeight);
         Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
 
-        backgroundManager = new BackgroundManager(this, frameLayout);
+        backgroundManager = new BackgroundManager(this, frameLayout, spriteHeight);
         initSprites();
+
+        new Thread(){
+            @Override
+            public void run() {
+                long timeStart, deltaTime;
+                while(true) {
+                    timeStart = System.nanoTime();
+                    backgroundManager.nextStep();
+                    deltaTime = (System.nanoTime() - timeStart) / 1000000;
+                    try {
+                        if(true){
+                            Thread.sleep(TIME_BETWEEN_FRAMES);
+                            Log.i(TAG, "sleep for " + (TIME_BETWEEN_FRAMES - deltaTime));
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }.start();
     }
 
     private void initSprites() {
@@ -64,8 +86,8 @@ public class GameActivity extends AppCompatActivity {
         playerImage.getLayoutParams().width = spriteWidth;
         playerImage.getLayoutParams().height = spriteHeight;
         //put player at bottom center of the screen
-        playerImage.setY(screenHeight - spriteHeight);
-        Log.i(TAG, "player down by " + backgroundManager.getSquareSizeY());
+        playerImage.setZ(1);
+        playerImage.setY(screenHeight - spriteHeight - backgroundManager.getSquareSizeY());
         playerImage.setX(screenWidth / 2 - spriteWidth / 2);
     }
 
