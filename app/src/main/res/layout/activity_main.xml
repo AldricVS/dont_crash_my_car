@@ -41,10 +41,11 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/buttonPlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/playButtonLabel" />
+                android:text="@string/playButtonLabel"
+                android:onClick="play"/>
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +59,8 @@
                 android:id="@+id/buttonCar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/carButtonLabel" />
+                android:text="@string/carButtonLabel"
+                android:onClick="chooseCar"/>
         </LinearLayout>
 
         <LinearLayout
@@ -72,7 +74,8 @@
                 android:id="@+id/buttonScores"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/scoresButtonLabel" />
+                android:text="@string/scoresButtonLabel"
+                android:onClick="seeScores"/>
         </LinearLayout>
 
         <LinearLayout
@@ -86,7 +89,8 @@
                 android:id="@+id/buttonExit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/exitButtonLabel" />
+                android:text="@string/exitButtonLabel"
+                android:onClick="exitApp"/>
         </LinearLayout>
     </LinearLayout>
 

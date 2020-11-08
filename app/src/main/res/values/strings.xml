@@ -1,9 +1,16 @@
 <resources>
     <string name="app_name">Don\'t crash my car</string>
+    <!--MAIN ACTIVITY-->
     <string name="titleLabel">Dont crash my car !</string>
     <string name="creditsLabel">Published by ZMA</string>
     <string name="playButtonLabel">Play</string>
     <string name="carButtonLabel">Choose car</string>
     <string name="scoresButtonLabel">High Scores</string>
     <string name="exitButtonLabel">Exit</string>
+    <string name="confirmExitTitle">Quit app ?</string>
+    <string name="confirmExitMessage">Do you really want to exit the game ?</string>
+    <string name="confirmExitYes">Yes</string>
+    <string name="confirmExitNo">No</string>
+    <!--GAME ACTIVITY-->
+    <string name="pauseButtonLabel">Pause</string>
 </resources>
