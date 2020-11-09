@@ -2,23 +2,14 @@ package com.zma.dontcrashmycar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
+import com.zma.dontcrashmycar.game.PlayerController;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
 import java.util.ArrayList;
@@ -27,6 +18,7 @@ public class GameActivity extends AppCompatActivity {
     private final String TAG = "GameActivity";
 
     private BackgroundManager backgroundManager;
+    private PlayerController playerController;
 
     private FrameLayout frameLayout;
     private ArrayList<ImageView> ennemies = new ArrayList<>();
@@ -36,6 +28,8 @@ public class GameActivity extends AppCompatActivity {
 
     private int spriteWidth;
     private int spriteHeight;
+
+    private GameThread gameThread;
 
     private final int TIME_BETWEEN_FRAMES = 16;
 
@@ -58,6 +52,34 @@ public class GameActivity extends AppCompatActivity {
         Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
 
         backgroundManager = new BackgroundManager(this, frameLayout, spriteHeight);
+        playerController = new PlayerController(this);
+
+        gameThread = new GameThread();
+        gameThread.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playerController.disableSensors();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        playerController.enableSensors();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        playerController.disableSensors();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        playerController.disableSensors();
     }
 
     /**

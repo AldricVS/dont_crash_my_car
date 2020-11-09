@@ -5,7 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.view.OrientationEventListener;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.GameActivity;
@@ -13,6 +13,10 @@ import com.zma.dontcrashmycar.R;
 
 /**
  * Used to control player with the orientation of the phone
+ * <pre>
+ *   Class created with the help of
+ *   https://google-developer-training.github.io/android-developer-advanced-course-practicals/unit-1-expand-the-user-experience/lesson-3-sensors/3-2-p-working-with-sensor-based-orientation/3-2-p-working-with-sensor-based-orientation.html
+ * </pre>
  */
 public class PlayerController{
     private final String TAG = "PlayerController";
@@ -26,14 +30,17 @@ public class PlayerController{
     private OrientationSensorListener orientationSensorListener = new OrientationSensorListener();
     SensorManager sensorManager;
     Sensor sensorAccelerometer;
+    float accelerometerValues[] = new float[3];
     Sensor sensorMagneticField;
+    float magneticValues[] = new float[3];
+    float rotationMatrix[] = new float[9];
+
+    //we only care about roll, since we could only move the car from left to right
+    float rollOrientation = 0f;
 
     /**
      * Constants used for speed and sensitivity, modify them to change gameplay feelings.
-     * <pre>
-     *  class created with the help of
-     *  https://google-developer-training.github.io/android-developer-advanced-course-practicals/unit-1-expand-the-user-experience/lesson-3-sensors/3-2-p-working-with-sensor-based-orientation/3-2-p-working-with-sensor-based-orientation.html
-     * </pre>
+     *
      */
     private final int PLAYER_SPEED = 20;
 
@@ -69,13 +76,20 @@ public class PlayerController{
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        enableSensor();
+        enableSensors();
+    }
+
+    /**
+     * Set the new position of the player depending on the orientation of the device
+     */
+    public void updatePlayerMovement(){
+
     }
 
     /**
      * Enables the sensors used to control player. Call this method after disabling them
      */
-    public void enableSensor(){
+    public void enableSensors(){
         sensorManager.registerListener(orientationSensorListener, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(orientationSensorListener, sensorMagneticField, SensorManager.SENSOR_DELAY_GAME);
     }
@@ -88,15 +102,41 @@ public class PlayerController{
     }
 
     class OrientationSensorListener implements SensorEventListener{
-
+        private final String TAG_LISTENER = "OrientationSensorListener";
         @Override
         public void onSensorChanged(SensorEvent event) {
+            synchronized (this){
+                //update values from one or another type
+                switch(event.sensor.getType()){
+                    case Sensor.TYPE_ACCELEROMETER:
+                        accelerometerValues = event.values.clone();
+                        break;
+                    case Sensor.TYPE_MAGNETIC_FIELD:
+                        magneticValues = event.values.clone();
+                        break;
+                    default:
+                        Log.w(TAG_LISTENER, "Wrong sensor type");
+                        return;
+                }
+
+                //calculate the rotation of the device
+                boolean isRotationSuccessful = SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerValues, magneticValues);
+                //Log.i(TAG_LISTENER, String.format("New roll values : %f", rotationMatrix[0]));
+                //SensorManager#getRotationMatrix can not return result under certain conditions (as a free fall of the device, unlikely to produce when playing though)
+                if(isRotationSuccessful){
+                    float orientationValues[] = new float[3];
+                    SensorManager.getOrientation(rotationMatrix, orientationValues);
+                    rollOrientation = orientationValues[2];
+                    Log.d(TAG_LISTENER, String.format("New orientation values : Pitch=%f, Yaw=%f, Roll=%f", orientationValues[0], orientationValues[1], orientationValues[2]));
+                    Log.i(TAG_LISTENER, "rollOrientation = " + rollOrientation);
+                }
+            }
 
         }
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+            Log.i(TAG_LISTENER, "Accuracy changed, new accuracy level : " + accuracy);
         }
     }
 }
