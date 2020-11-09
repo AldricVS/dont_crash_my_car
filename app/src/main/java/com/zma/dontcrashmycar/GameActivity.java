@@ -133,12 +133,14 @@ public class GameActivity extends AppCompatActivity {
 
                 //logic and rendering
                 backgroundManager.nextStep();
+                playerController.updatePlayerMovement();
 
                 //end of rendering : we check the time elapsed during this frame
                 deltaTime = (System.nanoTime() - timeStart) / 1000000;
                 try {
                     if (deltaTime < TIME_BETWEEN_FRAMES) {
                         Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
+                        Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

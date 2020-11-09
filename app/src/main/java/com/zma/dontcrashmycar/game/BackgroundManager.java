@@ -29,13 +29,13 @@ public class BackgroundManager {
     /**
      * Scrolling speed in dp / sec. Bigger the number is, faster the scrolling will be
      */
-    private final int BACKGROUND_SPEED = 40;
+    private final int BACKGROUND_SPEED = 20;
 
     public BackgroundManager(GameActivity activity, FrameLayout layout, int carSpriteHeight){
         this.activity = activity;
 
         //create all squares needed, and set size and position
-        squareSizeX = activity.getScreenWidth() / 7;
+        squareSizeX = activity.getScreenWidth() / 11;
         squareSizeY = activity.getScreenHeight() / (NUMBER_LINES_ON_ROAD - 1) - carSpriteHeight;
         int posX = activity.getScreenWidth() / 2 - squareSizeX / 2;
         int posY = activity.getScreenHeight() - squareSizeY;

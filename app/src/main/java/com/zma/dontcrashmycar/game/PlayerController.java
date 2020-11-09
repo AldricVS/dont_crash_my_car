@@ -34,15 +34,18 @@ public class PlayerController{
     Sensor sensorMagneticField;
     float magneticValues[] = new float[3];
     float rotationMatrix[] = new float[9];
-
     //we only care about roll, since we could only move the car from left to right
     float rollOrientation = 0f;
 
+    float leftLimitPosX;
+    float rightLimitPosX;
+
     /**
      * Constants used for speed and sensitivity, modify them to change gameplay feelings.
-     *
      */
-    private final int PLAYER_SPEED = 20;
+    private final int PLAYER_SPEED = 30;
+    //all rotation values under this constant will not be taken account
+    private final float ROTATION_THRESHOLD = 0.1f;
 
     /**
      * Instantiate the player controller : initiate the player sprite and the sensor
@@ -55,19 +58,26 @@ public class PlayerController{
     }
 
     private void initPlayerSprite(){
+        int spriteWidth = activity.getSpriteWidth();
+        int spriteHeight = activity.getSpriteHeight();
+        int screenWidth = activity.getScreenWidth();
+
         //load the player sprite (already added to the view)
         playerImage = activity.findViewById(R.id.playerCar);
         // TODO get the car sprite depending on the shared preferences
         playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
-        int spriteWidth = activity.getSpriteWidth();
         playerImage.getLayoutParams().width = spriteWidth;
-        int spriteHeight = activity.getSpriteHeight();
         playerImage.getLayoutParams().height = spriteHeight;
+
         //put player at bottom center of the screen
         playerImage.setZ(1);
         playerImage.setY(activity.getScreenHeight() - spriteHeight - activity.getSquareSizeY());
-        playerImage.setX(activity.getScreenWidth() / 2 - spriteWidth / 2);
+        playerImage.setX(screenWidth / 2 - spriteWidth / 2);
+
+        //calculate the player movement limits too
+        leftLimitPosX = 0f;
+        rightLimitPosX = (float)(screenWidth - spriteWidth);
     }
 
     private void initSensor(){
@@ -83,7 +93,24 @@ public class PlayerController{
      * Set the new position of the player depending on the orientation of the device
      */
     public void updatePlayerMovement(){
+        //check if rotation value is greater than threshold (in order to don't count very little movements)
+        if(Math.abs(rollOrientation) > ROTATION_THRESHOLD){
+            //the speed of the movement depends on the angle of the rotation (a small rotation will make the player go slowly and vice versa)
+            float movementVectorX = rollOrientation * PLAYER_SPEED;
 
+            //now calculate the new position of the player : it must not be out of the screen of course
+            float newPlayerPosX = playerImage.getX();
+            newPlayerPosX += movementVectorX;
+
+            if(newPlayerPosX < leftLimitPosX) {
+                newPlayerPosX = leftLimitPosX;
+            }else if(newPlayerPosX > rightLimitPosX){
+                newPlayerPosX = rightLimitPosX;
+            }
+
+            //assign this new position to the player
+            playerImage.setX(newPlayerPosX);
+        }
     }
 
     /**
