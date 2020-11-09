@@ -1,5 +1,9 @@
 package com.zma.dontcrashmycar.game;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.OrientationEventListener;
 import android.widget.ImageView;
@@ -16,7 +20,13 @@ public class PlayerController{
     private GameActivity activity;
     private ImageView playerImage;
 
-    private SensorManager sensorManager;
+    /**
+     * All attributes relative to phone orientation management
+     */
+    private OrientationSensorListener orientationSensorListener = new OrientationSensorListener();
+    SensorManager sensorManager;
+    Sensor sensorAccelerometer;
+    Sensor sensorMagneticField;
 
     /**
      * Constants used for speed and sensitivity, modify them to change gameplay feelings.
@@ -54,7 +64,39 @@ public class PlayerController{
     }
 
     private void initSensor(){
+        /*Sensor type TYPE_ORIENTATION is deprecated, so we have to get those values with accelerometer and magnetic sensor*/
+        sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
+        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
+        enableSensor();
     }
 
+    /**
+     * Enables the sensors used to control player. Call this method after disabling them
+     */
+    public void enableSensor(){
+        sensorManager.registerListener(orientationSensorListener, sensorAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(orientationSensorListener, sensorMagneticField, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    /**
+     * Disables sensors used to control player. Call this method when activity is paused.
+     */
+    public void disableSensors(){
+        sensorManager.unregisterListener(orientationSensorListener);
+    }
+
+    class OrientationSensorListener implements SensorEventListener{
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    }
 }
