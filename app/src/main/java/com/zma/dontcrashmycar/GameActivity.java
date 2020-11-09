@@ -2,22 +2,14 @@ package com.zma.dontcrashmycar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
+import com.zma.dontcrashmycar.game.PlayerController;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
 import java.util.ArrayList;
@@ -26,9 +18,9 @@ public class GameActivity extends AppCompatActivity {
     private final String TAG = "GameActivity";
 
     private BackgroundManager backgroundManager;
+    private PlayerController playerController;
 
     private FrameLayout frameLayout;
-    private ImageView playerImage;
     private ArrayList<ImageView> ennemies = new ArrayList<>();
 
     private int screenWidth;
@@ -37,12 +29,18 @@ public class GameActivity extends AppCompatActivity {
     private int spriteWidth;
     private int spriteHeight;
 
+    private GameThread gameThread;
+
     private final int TIME_BETWEEN_FRAMES = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        //we have to keep user from changing phone orientation (only portrait mode)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         frameLayout = findViewById(R.id.frameLayout);
         //init all dimensions used for displaying
         screenWidth = ScreenCalculator.getScreenWidth(this);
@@ -54,48 +52,42 @@ public class GameActivity extends AppCompatActivity {
         Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
 
         backgroundManager = new BackgroundManager(this, frameLayout, spriteHeight);
-        initSprites();
+        playerController = new PlayerController(this);
 
-        new Thread(){
-            @Override
-            public void run() {
-                long timeStart, deltaTime;
-                while(true) {
-                    timeStart = System.nanoTime();
-                    backgroundManager.nextStep();
-                    deltaTime = (System.nanoTime() - timeStart) / 1000000;
-                    try {
-                        if(true){
-                            Thread.sleep(TIME_BETWEEN_FRAMES);
-                            Log.i(TAG, "sleep for " + (TIME_BETWEEN_FRAMES - deltaTime));
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }.start();
+        gameThread = new GameThread();
+        gameThread.start();
     }
 
-    private void initSprites() {
-        //load the player sprite
-        playerImage = findViewById(R.id.playerCar);
-        playerImage.setImageDrawable(getDrawable(R.drawable.car));
-        //we have to set size of sprites depending on the screen size
-        playerImage.getLayoutParams().width = spriteWidth;
-        playerImage.getLayoutParams().height = spriteHeight;
-        //put player at bottom center of the screen
-        playerImage.setZ(1);
-        playerImage.setY(screenHeight - spriteHeight - backgroundManager.getSquareSizeY());
-        playerImage.setX(screenWidth / 2 - spriteWidth / 2);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        playerController.disableSensors();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        playerController.enableSensors();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        playerController.disableSensors();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        playerController.disableSensors();
     }
 
     /**
      * create an enemy sprite and add him to the list
      */
-    private void createEnemySprite(){
+    private void createEnemySprite() {
         ImageView enemySprite = new ImageView(getApplicationContext());
+
         ennemies.add(enemySprite);
     }
 
@@ -107,11 +99,53 @@ public class GameActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
-    public int getScreenHeight(){
+    public int getScreenHeight() {
         return screenHeight;
     }
 
-    public int getScreenWidth(){
+    public int getScreenWidth() {
         return screenWidth;
+    }
+
+    public int getSpriteWidth() {
+        return spriteWidth;
+    }
+
+    public int getSpriteHeight() {
+        return spriteHeight;
+    }
+
+    public int getSquareSizeY(){
+        return backgroundManager.getSquareSizeY();
+    }
+
+    class GameThread extends Thread {
+        @Override
+        public void run() {
+            /*
+             * We will keep track of the elapsed time to do the logic and render a frame.
+             * Instead of only sleep for fixed amount of time, we will wait depending on the time needed to render the previous frame
+             */
+            long timeStart, deltaTime;
+            while (true) {
+                //get the time at the beginning of the rendering
+                timeStart = System.nanoTime();
+
+                //logic and rendering
+                backgroundManager.nextStep();
+                playerController.updatePlayerMovement();
+
+                //end of rendering : we check the time elapsed during this frame
+                deltaTime = (System.nanoTime() - timeStart) / 1000000;
+                try {
+                    if (deltaTime < TIME_BETWEEN_FRAMES) {
+                        Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
+                        Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
