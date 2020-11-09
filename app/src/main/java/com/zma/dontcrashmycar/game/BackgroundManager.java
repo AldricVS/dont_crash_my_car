@@ -37,7 +37,6 @@ public class BackgroundManager {
         //create all squares needed, and set size and position
         squareSizeX = activity.getScreenWidth() / 7;
         squareSizeY = activity.getScreenHeight() / (NUMBER_LINES_ON_ROAD - 1) - carSpriteHeight;
-        int halfSizeY = squareSizeY / 2;
         int posX = activity.getScreenWidth() / 2 - squareSizeX / 2;
         int posY = activity.getScreenHeight() - squareSizeY;
 
@@ -67,7 +66,6 @@ public class BackgroundManager {
             //and store it in the array for later
             squares[i] = square;
         }
-
     }
 
     /**
