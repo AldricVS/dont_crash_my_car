@@ -1,6 +1,7 @@
 package com.zma.dontcrashmycar.game;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,8 +22,16 @@ import com.zma.dontcrashmycar.R;
 public class PlayerController{
     private final String TAG = "PlayerController";
 
+    /**
+     * Hitbox ratio of the player's car (depends on the size of the player's sprite)
+     * ONLY BETWEEN 0f and 1f.
+     */
+    private final float HITBOX_RATIO = 0.9f;
+
+
     private GameActivity activity;
     private ImageView playerImage;
+    private Hitbox hitbox;
 
     /**
      * All attributes relative to phone orientation management
@@ -54,6 +63,7 @@ public class PlayerController{
     public PlayerController(GameActivity activity){
         this.activity = activity;
         initPlayerSprite();
+        hitbox = new Hitbox(playerImage, HITBOX_RATIO);
         initSensor();
     }
 
@@ -89,17 +99,24 @@ public class PlayerController{
         enableSensors();
     }
 
+    public Hitbox getHitbox() {
+        return hitbox;
+    }
+
     /**
      * Set the new position of the player depending on the orientation of the device
      */
     public void updatePlayerMovement(){
         //check if rotation value is greater than threshold (in order to don't count very little movements)
         if(Math.abs(rollOrientation) > ROTATION_THRESHOLD){
+            //store the initial position for hitbox movement
+            float initialPositionX = playerImage.getX();
+
             //the speed of the movement depends on the angle of the rotation (a small rotation will make the player go slowly and vice versa)
             float movementVectorX = rollOrientation * PLAYER_SPEED;
 
             //now calculate the new position of the player : it must not be out of the screen of course
-            float newPlayerPosX = playerImage.getX();
+            float newPlayerPosX = initialPositionX;
             newPlayerPosX += movementVectorX;
 
             if(newPlayerPosX < leftLimitPosX) {
@@ -110,6 +127,9 @@ public class PlayerController{
 
             //assign this new position to the player
             playerImage.setX(newPlayerPosX);
+
+            //move the hitbox
+            hitbox.moveX(newPlayerPosX - initialPositionX);
         }
     }
 
