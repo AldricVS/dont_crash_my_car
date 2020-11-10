@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
+import com.zma.dontcrashmycar.game.EnemiesManager;
 import com.zma.dontcrashmycar.game.PlayerController;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
@@ -19,6 +20,7 @@ public class GameActivity extends AppCompatActivity {
 
     private BackgroundManager backgroundManager;
     private PlayerController playerController;
+    private EnemiesManager enemiesManager;
 
     private FrameLayout frameLayout;
     private ArrayList<ImageView> ennemies = new ArrayList<>();
@@ -32,6 +34,11 @@ public class GameActivity extends AppCompatActivity {
     private GameThread gameThread;
 
     private final int TIME_BETWEEN_FRAMES = 16;
+
+    /**
+     * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
+     */
+    private final int NUMBER_OF_ENEMIES = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
 
         backgroundManager = new BackgroundManager(this, frameLayout, spriteHeight);
         playerController = new PlayerController(this);
+        enemiesManager = new EnemiesManager(this, frameLayout, NUMBER_OF_ENEMIES);
 
         gameThread = new GameThread();
         gameThread.start();
@@ -134,6 +142,7 @@ public class GameActivity extends AppCompatActivity {
                 //logic and rendering
                 backgroundManager.nextStep();
                 playerController.updatePlayerMovement();
+                enemiesManager.updateEnemies();
 
                 //end of rendering : we check the time elapsed during this frame
                 deltaTime = (System.nanoTime() - timeStart) / 1000000;

@@ -154,8 +154,8 @@ public class PlayerController{
                     float orientationValues[] = new float[3];
                     SensorManager.getOrientation(rotationMatrix, orientationValues);
                     rollOrientation = orientationValues[2];
-                    Log.d(TAG_LISTENER, String.format("New orientation values : Pitch=%f, Yaw=%f, Roll=%f", orientationValues[0], orientationValues[1], orientationValues[2]));
-                    Log.i(TAG_LISTENER, "rollOrientation = " + rollOrientation);
+                    //Log.d(TAG_LISTENER, String.format("New orientation values : Pitch=%f, Yaw=%f, Roll=%f", orientationValues[0], orientationValues[1], orientationValues[2]));
+                    //Log.i(TAG_LISTENER, "rollOrientation = " + rollOrientation);
                 }
             }
 
