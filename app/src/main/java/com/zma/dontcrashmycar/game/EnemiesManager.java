@@ -17,10 +17,9 @@ import java.util.Random;
 public class EnemiesManager {
     private final String TAG = "EnemiesManager";
 
-    /**
+    /*
      * Constants to change to modify the gameplay
      */
-
     /**
      * The initial speed of each enemy
      */
@@ -93,6 +92,22 @@ public class EnemiesManager {
     }
 
     /**
+     * Check if any of the enemies is colliding with the player's hitbox
+     * @param playerHitbox the hitbox of the player
+     * @return {@code true} if they is at least one collision, {@code false} else
+     */
+    public boolean detectCollision(Hitbox playerHitbox){
+        for(Enemy enemy : enemies){
+            if(enemy.getHitbox().isColliding(playerHitbox)){
+                //at least one collision, stop all
+                return true;
+            }
+        }
+        //no collision here
+        return false;
+    }
+
+    /**
      * Multiply the global enemy speed by {@link EnemiesManager#ENEMY_SPEED_MULTIPLIER}
      */
     public void increaseEnemySpeed(){
@@ -127,6 +142,9 @@ public class EnemiesManager {
 
         float positionY = random.nextFloat() * (-screenHeight * 2) - spriteHeight;
         enemy.setPosition(positionX, positionY);
+
+        //we also have to reset his hitbox
+        enemy.resetHitboxPosition();
     }
 
     /**

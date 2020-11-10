@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
 import com.zma.dontcrashmycar.game.EnemiesManager;
+import com.zma.dontcrashmycar.game.Hitbox;
 import com.zma.dontcrashmycar.game.PlayerController;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
@@ -30,6 +31,9 @@ public class GameActivity extends AppCompatActivity {
 
     private int spriteWidth;
     private int spriteHeight;
+    
+    private int hitboxWidth;
+    private int hitboxHeight;
 
     private GameThread gameThread;
 
@@ -39,6 +43,8 @@ public class GameActivity extends AppCompatActivity {
      * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
      */
     private final int NUMBER_OF_ENEMIES = 4;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,17 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * Tries to detect any collision between the player and enemies.
+     */
+    private void checkForCollision(){
+        Hitbox playerHitbox = playerController.getHitbox();
+        if(enemiesManager.detectCollision(playerHitbox)){
+            //TODO collision happened, end the game and go to scores
+            Log.i(TAG, "Player has collided with an enemy");
+        }
+    }
+
+    /**
      * We don't want that the user could return to the previous screen easily
      */
     @Override
@@ -143,13 +160,14 @@ public class GameActivity extends AppCompatActivity {
                 backgroundManager.nextStep();
                 playerController.updatePlayerMovement();
                 enemiesManager.updateEnemies();
+                checkForCollision();
 
                 //end of rendering : we check the time elapsed during this frame
                 deltaTime = (System.nanoTime() - timeStart) / 1000000;
                 try {
                     if (deltaTime < TIME_BETWEEN_FRAMES) {
                         Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
-                        Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
+                        //Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
