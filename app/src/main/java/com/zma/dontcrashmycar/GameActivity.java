@@ -34,6 +34,10 @@ public class GameActivity extends AppCompatActivity {
     private GameThread gameThread;
 
     private final int TIME_BETWEEN_FRAMES = 16;
+
+    /**
+     * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
+     */
     private final int NUMBER_OF_ENEMIES = 4;
 
     @Override

@@ -24,7 +24,7 @@ public class EnemiesManager {
     /**
      * The initial speed of each enemy
      */
-    private final float ENEMY_SPEED_BASE = 20;
+    private final float ENEMY_SPEED_BASE = 15;
 
     /**
      *
@@ -74,9 +74,6 @@ public class EnemiesManager {
             //add to the layout and list
             enemies.add(enemy);
             layout.addView(enemyImage);
-
-
-
         }
     }
 
@@ -90,9 +87,18 @@ public class EnemiesManager {
             //if enemy is at bottom of the screen, put it back to top at random position and speed
             if(enemy.isUnderScreen()){
                 resetEnemyPosition(enemy);
+                setRandomSpeed(enemy);
             }
         }
     }
+
+    /**
+     * Multiply the global enemy speed by {@link EnemiesManager#ENEMY_SPEED_MULTIPLIER}
+     */
+    public void increaseEnemySpeed(){
+        currentEnemySpeed *= ENEMY_SPEED_MULTIPLIER;
+    }
+
 
     /**
      * Set a random speed for an enemy.
@@ -111,19 +117,45 @@ public class EnemiesManager {
      * @param enemy the enemy to ch
      */
     private void resetEnemyPosition(Enemy enemy){
-        float positionX = random.nextFloat() * (screenWidth - spriteWidth);
+        // We don't want to have an enemy that go through another,
+        // so we have to check the randomly-generated X position in order to avoid this
+
+        float positionX;
+        do{
+            positionX = random.nextFloat() * (screenWidth - spriteWidth);
+        }while(isEnemyInTheAxis(positionX, enemy));
+
         float positionY = random.nextFloat() * (-screenHeight * 2) - spriteHeight;
         enemy.setPosition(positionX, positionY);
     }
 
-
-
     /**
-     * Multiply the global enemy speed by {@link EnemiesManager#ENEMY_SPEED_MULTIPLIER}
+     * Checks if an enemy is in the X axis specified
+     * @param positionX the coordinate to check
+     * @param enemy the enemy who want to change position
+     * @return
      */
-    public void increaseEnemySpeed(){
-        currentEnemySpeed *= ENEMY_SPEED_MULTIPLIER;
+    private boolean isEnemyInTheAxis(float positionX, Enemy enemy) {
+        /**
+         * position is valid if
+         *      positionX <= otherEnemy.posX - spriteWidth OR positionX >= otherEnemy.posX + spriteWidth
+         * So, position is not valid if
+         *      positionX > otherEnemy.posX - spriteWidth AND positionX < otherEnemy.posX + spriteWidth
+         */
+        for(Enemy e : enemies){
+            //we don't care about the enemy who want to set his new position
+            if(e != enemy){
+                float otherPositionX = e.getPositionX();
+                if(positionX > otherPositionX - spriteWidth && positionX < otherPositionX + spriteWidth){
+                    //problem with an enemy
+                    return true;
+                }
+            }
+        }
+        //no problem with position if we are here
+        return false;
     }
+
 
     /**
      * Generate a random number between two limits (inclusive)

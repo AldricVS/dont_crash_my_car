@@ -36,6 +36,14 @@ public class Enemy {
         imageView.setY(positionY);
     }
 
+    public float getPositionX(){
+        return imageView.getX();
+    }
+
+    public float getPositionY(){
+        return imageView.getY();
+    }
+
     /**
      * Check if enemy is under the screen.
      */
