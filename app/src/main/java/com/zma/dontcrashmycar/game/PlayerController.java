@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
@@ -63,7 +64,6 @@ public class PlayerController{
     public PlayerController(GameActivity activity){
         this.activity = activity;
         initPlayerSprite();
-        Log.d(TAG, "X = " + playerImage.getX() + " Y = " + playerImage.getY());
         initSensor();
     }
 
@@ -78,7 +78,7 @@ public class PlayerController{
         playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
         playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
         playerImage.setLayoutParams(layoutParams);
 
         //put player at bottom center of the screen
@@ -160,20 +160,16 @@ public class PlayerController{
                         magneticValues = event.values.clone();
                         break;
                     default:
-                        Log.w(TAG_LISTENER, "Wrong sensor type");
                         return;
                 }
 
                 //calculate the rotation of the device
                 boolean isRotationSuccessful = SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerValues, magneticValues);
-                //Log.i(TAG_LISTENER, String.format("New roll values : %f", rotationMatrix[0]));
                 //SensorManager#getRotationMatrix can not return result under certain conditions (as a free fall of the device, unlikely to produce when playing though)
                 if(isRotationSuccessful){
                     float orientationValues[] = new float[3];
                     SensorManager.getOrientation(rotationMatrix, orientationValues);
                     rollOrientation = orientationValues[2];
-                    //Log.d(TAG_LISTENER, String.format("New orientation values : Pitch=%f, Yaw=%f, Roll=%f", orientationValues[0], orientationValues[1], orientationValues[2]));
-                    //Log.i(TAG_LISTENER, "rollOrientation = " + rollOrientation);
                 }
             }
 

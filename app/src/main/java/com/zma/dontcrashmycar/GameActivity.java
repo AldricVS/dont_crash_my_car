@@ -5,28 +5,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
 import com.zma.dontcrashmycar.game.EnemiesManager;
 import com.zma.dontcrashmycar.game.PlayerController;
+import com.zma.dontcrashmycar.game.Score;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
 
-import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
     private final String TAG = "GameActivity";
 
     private BackgroundManager backgroundManager;
     private PlayerController playerController;
+    private Score score;
     private EnemiesManager enemiesManager;
 
-    private FrameLayout frameLayout;
+    private RelativeLayout relativeLayout;
     private LinearLayout pauseLayout;
+    private TextView scoreTextView;
 
     private int screenWidth;
     private int screenHeight;
@@ -53,8 +54,9 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        frameLayout = findViewById(R.id.frameLayout);
-        pauseLayout = findViewById(R.id.pause_layout);
+        relativeLayout = (RelativeLayout)findViewById(R.id.frameLayout);
+        pauseLayout = (LinearLayout)findViewById(R.id.pause_layout);
+        scoreTextView = (TextView) findViewById(R.id.scoreTextView);
 
         //we have to keep user from changing phone orientation (only portrait mode)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -65,12 +67,10 @@ public class GameActivity extends AppCompatActivity {
         spriteWidth = screenWidth / 6;
         spriteHeight = 5 * spriteWidth / 3;
 
-        Log.d(TAG, "sprite width = " + spriteWidth + " & sprite height = " + spriteHeight);
-        Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
-
-        backgroundManager = new BackgroundManager(this, frameLayout, spriteHeight);
+        backgroundManager = new BackgroundManager(this, relativeLayout, spriteHeight);
         playerController = new PlayerController(this);
-        enemiesManager = new EnemiesManager(this, frameLayout, NUMBER_OF_ENEMIES);
+        score = new Score();
+        enemiesManager = new EnemiesManager(this, relativeLayout, NUMBER_OF_ENEMIES);
 
         //hide and disable the pause layout, and start the game thread
         setGameActive(true);
@@ -96,8 +96,8 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         setGameActive(false);
+        super.onDestroy();
     }
 
     /**
@@ -124,11 +124,9 @@ public class GameActivity extends AppCompatActivity {
                 playerController.enableSensors();
                 gameThread = new GameThread();
                 gameThread.start();
-                Log.d(TAG, "Game is now active");
             }else{
                 pauseLayout.setVisibility(View.VISIBLE);
                 playerController.disableSensors();
-                Log.d(TAG, "Game is now paused");
             }
         }
     }
@@ -156,8 +154,8 @@ public class GameActivity extends AppCompatActivity {
         setGameActive(false);
         //return to menu, without forgetting to kill this game activity
         Intent intent = new Intent(this, MainActivity.class);
-        finish();
         startActivity(intent);
+        finish();
     }
 
 
@@ -195,18 +193,26 @@ public class GameActivity extends AppCompatActivity {
     private void checkForCollision(){
         if(enemiesManager.isThereCollision(playerController)){
             //TODO collision happened, end the game and go to scores
-            Log.i(TAG, "Player has collided with an enemy");
             //we have to stop the game (i.e the game thread)
             isPlaying = false;
 
             ///TODO : this is for testing purposes, we have to do as the javadoc above says instead
             //launch main menu activity and destroy the game activity
             Intent intent = new Intent(this, MainActivity.class);
-            finish();
             startActivity(intent);
+            finish();
         }
     }
 
+    private void updateScore() {
+        //increase score, it it returns true, that means that we have to increase enemies speed
+        if(score.addScore()){
+            enemiesManager.increaseEnemySpeed();
+        }
+        //update the score text label
+        //we can't do this on another thread, we have to do this on the ui thread
+        runOnUiThread(() -> scoreTextView.setText(Integer.toString(score.getScore())));
+    }
 
     class GameThread extends Thread {
         @Override
@@ -220,18 +226,19 @@ public class GameActivity extends AppCompatActivity {
                 //get the time at the beginning of the rendering
                 timeStart = System.nanoTime();
 
-                //logic and rendering
+                /*logic and rendering*/
                 backgroundManager.nextStep();
                 playerController.updatePlayerMovement();
                 enemiesManager.updateEnemies();
                 checkForCollision();
+                updateScore();
+
 
                 //end of rendering : we check the time elapsed during this frame
                 deltaTime = (System.nanoTime() - timeStart) / 1000000;
                 try {
                     if (deltaTime < TIME_BETWEEN_FRAMES) {
                         Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
-                        //Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -239,4 +246,5 @@ public class GameActivity extends AppCompatActivity {
             }
         }
     }
+
 }
