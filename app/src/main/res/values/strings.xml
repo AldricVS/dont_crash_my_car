@@ -13,4 +13,9 @@
     <string name="confirmExitNo">No</string>
     <!--GAME ACTIVITY-->
     <string name="pauseButtonLabel">Pause</string>
+    <string name="ButtonPauseLabel">Pause</string>
+    <string name="players_sprite_description">Players\'s car</string>
+    <string name="pause_title">Pause</string>
+    <string name="button_resume_label">Resume</string>
+    <string name="button_quit_game_label">Quit game</string>
 </resources>
