@@ -2,6 +2,7 @@ package com.zma.dontcrashmycar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,8 +31,12 @@ public class GameActivity extends AppCompatActivity {
 
     private int spriteWidth;
     private int spriteHeight;
+    
+    private int hitboxWidth;
+    private int hitboxHeight;
 
     private GameThread gameThread;
+    private boolean isPlaying = true;
 
     private final int TIME_BETWEEN_FRAMES = 16;
 
@@ -39,6 +44,8 @@ public class GameActivity extends AppCompatActivity {
      * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
      */
     private final int NUMBER_OF_ENEMIES = 4;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +60,7 @@ public class GameActivity extends AppCompatActivity {
         screenWidth = ScreenCalculator.getScreenWidth(this);
         screenHeight = ScreenCalculator.getScreenHeight(this);
         spriteWidth = screenWidth / 6;
-        spriteHeight = 2 * spriteWidth;
+        spriteHeight = 5 * spriteWidth / 3;
 
         Log.d(TAG, "sprite width = " + spriteWidth + " & sprite height = " + spriteHeight);
         Log.d(TAG, "frame width = " + screenWidth + " & frame height = " + screenHeight);
@@ -100,6 +107,25 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * Tries to detect any collision between the player and enemies.
+     * If it happens, go to the score activity creating intent
+     */
+    private void checkForCollision(){
+        if(enemiesManager.isThereCollision(playerController)){
+            //TODO collision happened, end the game and go to scores
+            Log.i(TAG, "Player has collided with an enemy");
+            //we have to stop the game (i.e the game thread)
+            isPlaying = false;
+
+            ///TODO : this is for testing purposes, we have to do as the javadoc above says instead
+            //launch main menu activity and destroy the game activity
+            Intent intent = new Intent(this, MainActivity.class);
+            finish();
+            startActivity(intent);
+        }
+    }
+
+    /**
      * We don't want that the user could return to the previous screen easily
      */
     @Override
@@ -135,7 +161,7 @@ public class GameActivity extends AppCompatActivity {
              * Instead of only sleep for fixed amount of time, we will wait depending on the time needed to render the previous frame
              */
             long timeStart, deltaTime;
-            while (true) {
+            while (isPlaying) {
                 //get the time at the beginning of the rendering
                 timeStart = System.nanoTime();
 
@@ -143,13 +169,14 @@ public class GameActivity extends AppCompatActivity {
                 backgroundManager.nextStep();
                 playerController.updatePlayerMovement();
                 enemiesManager.updateEnemies();
+                checkForCollision();
 
                 //end of rendering : we check the time elapsed during this frame
                 deltaTime = (System.nanoTime() - timeStart) / 1000000;
                 try {
                     if (deltaTime < TIME_BETWEEN_FRAMES) {
                         Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
-                        Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
+                        //Log.d(TAG, "Sleep for " + (TIME_BETWEEN_FRAMES - deltaTime) + "ms");
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

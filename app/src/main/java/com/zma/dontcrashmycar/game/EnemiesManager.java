@@ -17,10 +17,9 @@ import java.util.Random;
 public class EnemiesManager {
     private final String TAG = "EnemiesManager";
 
-    /**
+    /*
      * Constants to change to modify the gameplay
      */
-
     /**
      * The initial speed of each enemy
      */
@@ -36,6 +35,12 @@ public class EnemiesManager {
      * When wanted, enemy speed can be increased by a specific amount
      */
     private final float ENEMY_SPEED_MULTIPLIER = 1.2f;
+
+    /**
+     * The bigger this value is, the more tolerant the game is about collisions.
+     * This value MUST be lower than sprite width / 2 and spite height / 2
+     */
+    private final float COLLISION_TOLERANCE = 10f;
 
     private List<Enemy> enemies = new ArrayList<>();
     private float currentEnemySpeed = ENEMY_SPEED_BASE;
@@ -62,9 +67,9 @@ public class EnemiesManager {
         for(int i = 0; i < numberOfEnemies; i++){
             ImageView enemyImage = new ImageView(activity);
             enemyImage.setImageDrawable(enemyDrawable);
+            enemyImage.setScaleType(ImageView.ScaleType.FIT_XY);
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
             enemyImage.setLayoutParams(layoutParams);
-
             //create a new instance of enemy
             Enemy enemy = new Enemy(enemyImage, screenWidth, screenHeight);
             setRandomSpeed(enemy);
@@ -90,6 +95,24 @@ public class EnemiesManager {
                 setRandomSpeed(enemy);
             }
         }
+    }
+
+    public boolean isThereCollision(PlayerController playerController){
+        float playerPosX = playerController.getImageView().getX();
+        float playerPosY = playerController.getImageView().getY();
+        for(Enemy enemy : enemies){
+            float enemyPosX = enemy.getImageView().getX();
+            float enemyPosY = enemy.getImageView().getY();
+
+            //we don't want to be cruel with the player, we have some pixels of tolerance
+            if(playerPosX + COLLISION_TOLERANCE < enemyPosX + spriteWidth - COLLISION_TOLERANCE
+             && playerPosX + spriteWidth - COLLISION_TOLERANCE > enemyPosX + COLLISION_TOLERANCE
+             && playerPosY + COLLISION_TOLERANCE < enemyPosY + spriteHeight - COLLISION_TOLERANCE
+             && playerPosY + spriteHeight - COLLISION_TOLERANCE > enemyPosY + COLLISION_TOLERANCE){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -127,6 +150,9 @@ public class EnemiesManager {
 
         float positionY = random.nextFloat() * (-screenHeight * 2) - spriteHeight;
         enemy.setPosition(positionX, positionY);
+
+        //we also have to reset his hitbox
+        enemy.resetHitboxPosition();
     }
 
     /**

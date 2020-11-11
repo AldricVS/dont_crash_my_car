@@ -1,11 +1,13 @@
 package com.zma.dontcrashmycar.game;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.GameActivity;
@@ -20,6 +22,13 @@ import com.zma.dontcrashmycar.R;
  */
 public class PlayerController{
     private final String TAG = "PlayerController";
+
+    /**
+     * Hitbox ratio of the player's car (depends on the size of the player's sprite)
+     * ONLY BETWEEN 0f and 1f.
+     */
+    private final float HITBOX_RATIO = 0.9f;
+
 
     private GameActivity activity;
     private ImageView playerImage;
@@ -54,6 +63,7 @@ public class PlayerController{
     public PlayerController(GameActivity activity){
         this.activity = activity;
         initPlayerSprite();
+        Log.d(TAG, "X = " + playerImage.getX() + " Y = " + playerImage.getY());
         initSensor();
     }
 
@@ -67,8 +77,9 @@ public class PlayerController{
         // TODO get the car sprite depending on the shared preferences
         playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
-        playerImage.getLayoutParams().width = spriteWidth;
-        playerImage.getLayoutParams().height = spriteHeight;
+        playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
+        playerImage.setLayoutParams(layoutParams);
 
         //put player at bottom center of the screen
         playerImage.setZ(1);
@@ -95,11 +106,14 @@ public class PlayerController{
     public void updatePlayerMovement(){
         //check if rotation value is greater than threshold (in order to don't count very little movements)
         if(Math.abs(rollOrientation) > ROTATION_THRESHOLD){
+            //store the initial position for hitbox movement
+            float initialPositionX = playerImage.getX();
+
             //the speed of the movement depends on the angle of the rotation (a small rotation will make the player go slowly and vice versa)
             float movementVectorX = rollOrientation * PLAYER_SPEED;
 
             //now calculate the new position of the player : it must not be out of the screen of course
-            float newPlayerPosX = playerImage.getX();
+            float newPlayerPosX = initialPositionX;
             newPlayerPosX += movementVectorX;
 
             if(newPlayerPosX < leftLimitPosX) {
@@ -126,6 +140,10 @@ public class PlayerController{
      */
     public void disableSensors(){
         sensorManager.unregisterListener(orientationSensorListener);
+    }
+
+    public ImageView getImageView() {
+        return playerImage;
     }
 
     class OrientationSensorListener implements SensorEventListener{
