@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
 import com.zma.dontcrashmycar.game.EnemiesManager;
@@ -24,6 +26,7 @@ public class GameActivity extends AppCompatActivity {
     private EnemiesManager enemiesManager;
 
     private FrameLayout frameLayout;
+    private LinearLayout pauseLayout;
     private ArrayList<ImageView> ennemies = new ArrayList<>();
 
     private int screenWidth;
@@ -45,17 +48,20 @@ public class GameActivity extends AppCompatActivity {
      */
     private final int NUMBER_OF_ENEMIES = 4;
 
-
-
+    /*APP LIFECYCLE*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        frameLayout = findViewById(R.id.frameLayout);
+        pauseLayout = findViewById(R.id.pause_layout);
+        //hide and disable the pause layout
+        setPauseViewActive(false);
 
         //we have to keep user from changing phone orientation (only portrait mode)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        frameLayout = findViewById(R.id.frameLayout);
+
         //init all dimensions used for displaying
         screenWidth = ScreenCalculator.getScreenWidth(this);
         screenHeight = ScreenCalculator.getScreenHeight(this);
@@ -98,13 +104,62 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * create an enemy sprite and add him to the list
+     * We don't want that the user could return to the previous screen easily
      */
-    private void createEnemySprite() {
-        ImageView enemySprite = new ImageView(getApplicationContext());
-
-        ennemies.add(enemySprite);
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
     }
+
+
+    /*LAYOUT METHODS*/
+
+    private void setPauseViewActive(boolean active){
+        if(active){
+            pauseLayout.setVisibility(View.VISIBLE);
+        }else{
+            pauseLayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
+
+    /*LISTENERS*/
+
+    /**
+     * Suspend the game thread and display the pause screen.
+     */
+    public void pauseGame(View view){
+        isPlaying = false;
+        setPauseViewActive(true);
+    }
+
+    /*GETTERS AND SETTERS*/
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getSpriteWidth() {
+        return spriteWidth;
+    }
+
+    public int getSpriteHeight() {
+        return spriteHeight;
+    }
+
+    public int getSquareSizeY(){
+        return backgroundManager.getSquareSizeY();
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    /*GAME RELATIVE METHODS*/
 
     /**
      * Tries to detect any collision between the player and enemies.
@@ -125,33 +180,6 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * We don't want that the user could return to the previous screen easily
-     */
-    @Override
-    public void onBackPressed() {
-        //super.onBackPressed();
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
-    }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getSpriteWidth() {
-        return spriteWidth;
-    }
-
-    public int getSpriteHeight() {
-        return spriteHeight;
-    }
-
-    public int getSquareSizeY(){
-        return backgroundManager.getSquareSizeY();
-    }
 
     class GameThread extends Thread {
         @Override
