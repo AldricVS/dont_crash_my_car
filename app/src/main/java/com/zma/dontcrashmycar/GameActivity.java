@@ -27,7 +27,6 @@ public class GameActivity extends AppCompatActivity {
 
     private FrameLayout frameLayout;
     private LinearLayout pauseLayout;
-    private ArrayList<ImageView> ennemies = new ArrayList<>();
 
     private int screenWidth;
     private int screenHeight;
@@ -39,14 +38,15 @@ public class GameActivity extends AppCompatActivity {
     private int hitboxHeight;
 
     private GameThread gameThread;
-    private boolean isPlaying = true;
+    private boolean isPlaying = false;
 
     private final int TIME_BETWEEN_FRAMES = 16;
 
-    /**
+    /*
      * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
      */
     private final int NUMBER_OF_ENEMIES = 4;
+
 
     /*APP LIFECYCLE*/
     @Override
@@ -55,12 +55,9 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         frameLayout = findViewById(R.id.frameLayout);
         pauseLayout = findViewById(R.id.pause_layout);
-        //hide and disable the pause layout
-        setPauseViewActive(false);
 
         //we have to keep user from changing phone orientation (only portrait mode)
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
 
         //init all dimensions used for displaying
         screenWidth = ScreenCalculator.getScreenWidth(this);
@@ -75,32 +72,32 @@ public class GameActivity extends AppCompatActivity {
         playerController = new PlayerController(this);
         enemiesManager = new EnemiesManager(this, frameLayout, NUMBER_OF_ENEMIES);
 
-        gameThread = new GameThread();
-        gameThread.start();
+        //hide and disable the pause layout, and start the game thread
+        setGameActive(true);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        playerController.disableSensors();
+        setGameActive(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        playerController.enableSensors();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        playerController.disableSensors();
+        //A to this method when the game is already not active will only cost one boolean verification
+        setGameActive(false);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        playerController.disableSensors();
+        setGameActive(false);
     }
 
     /**
@@ -111,16 +108,32 @@ public class GameActivity extends AppCompatActivity {
         //super.onBackPressed();
     }
 
-
-    /*LAYOUT METHODS*/
-
-    private void setPauseViewActive(boolean active){
-        if(active){
-            pauseLayout.setVisibility(View.VISIBLE);
-        }else{
-            pauseLayout.setVisibility(View.INVISIBLE);
+    /**
+     * Set all behavior relative to the game pause and play.
+     * It will manage game thread state and pause layout visibility.
+     * If game is already in the right state, nothing will happen
+     * @param active if the game has to be active or not
+     */
+    private void setGameActive(boolean active){
+        //check if the pause state is not already set
+        if(active != isPlaying){
+            //if active == false, this will also stop the current thread
+            isPlaying = active;
+            if(active){
+                pauseLayout.setVisibility(View.INVISIBLE);
+                playerController.enableSensors();
+                gameThread = new GameThread();
+                gameThread.start();
+                Log.d(TAG, "Game is now active");
+            }else{
+                pauseLayout.setVisibility(View.VISIBLE);
+                playerController.disableSensors();
+                Log.d(TAG, "Game is now paused");
+            }
         }
     }
+
+    /*LAYOUT METHODS*/
 
 
 
@@ -130,9 +143,23 @@ public class GameActivity extends AppCompatActivity {
      * Suspend the game thread and display the pause screen.
      */
     public void pauseGame(View view){
-        isPlaying = false;
-        setPauseViewActive(true);
+        setGameActive(false);
     }
+
+
+    public void resumeGame(View view) {
+        setGameActive(true);
+    }
+
+
+    public void quitGame(View view) {
+        setGameActive(false);
+        //return to menu, without forgetting to kill this game activity
+        Intent intent = new Intent(this, MainActivity.class);
+        finish();
+        startActivity(intent);
+    }
+
 
     /*GETTERS AND SETTERS*/
     public int getScreenHeight() {
