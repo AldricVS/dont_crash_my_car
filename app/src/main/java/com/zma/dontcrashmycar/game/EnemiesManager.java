@@ -36,6 +36,12 @@ public class EnemiesManager {
      */
     private final float ENEMY_SPEED_MULTIPLIER = 1.2f;
 
+    /**
+     * The bigger this value is, the more tolerant the game is about collisions.
+     * This value MUST be lower than sprite width / 2 and spite height / 2
+     */
+    private final float COLLISION_TOLERANCE = 10f;
+
     private List<Enemy> enemies = new ArrayList<>();
     private float currentEnemySpeed = ENEMY_SPEED_BASE;
 
@@ -61,9 +67,9 @@ public class EnemiesManager {
         for(int i = 0; i < numberOfEnemies; i++){
             ImageView enemyImage = new ImageView(activity);
             enemyImage.setImageDrawable(enemyDrawable);
+            enemyImage.setScaleType(ImageView.ScaleType.FIT_XY);
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
             enemyImage.setLayoutParams(layoutParams);
-
             //create a new instance of enemy
             Enemy enemy = new Enemy(enemyImage, screenWidth, screenHeight);
             setRandomSpeed(enemy);
@@ -91,19 +97,21 @@ public class EnemiesManager {
         }
     }
 
-    /**
-     * Check if any of the enemies is colliding with the player's hitbox
-     * @param playerHitbox the hitbox of the player
-     * @return {@code true} if they is at least one collision, {@code false} else
-     */
-    public boolean detectCollision(Hitbox playerHitbox){
+    public boolean isThereCollision(PlayerController playerController){
+        float playerPosX = playerController.getImageView().getX();
+        float playerPosY = playerController.getImageView().getY();
         for(Enemy enemy : enemies){
-            if(enemy.getHitbox().isColliding(playerHitbox)){
-                //at least one collision, stop all
+            float enemyPosX = enemy.getImageView().getX();
+            float enemyPosY = enemy.getImageView().getY();
+
+            //we don't want to be cruel with the player, we have some pixels of tolerance
+            if(playerPosX + COLLISION_TOLERANCE < enemyPosX + spriteWidth - COLLISION_TOLERANCE
+             && playerPosX + spriteWidth - COLLISION_TOLERANCE > enemyPosX + COLLISION_TOLERANCE
+             && playerPosY + COLLISION_TOLERANCE < enemyPosY + spriteHeight - COLLISION_TOLERANCE
+             && playerPosY + spriteHeight - COLLISION_TOLERANCE > enemyPosY + COLLISION_TOLERANCE){
                 return true;
             }
         }
-        //no collision here
         return false;
     }
 

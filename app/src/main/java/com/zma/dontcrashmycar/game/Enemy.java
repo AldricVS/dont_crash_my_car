@@ -14,7 +14,6 @@ public class Enemy {
     private final float HITBOX_RATIO = 0.95f;
 
     private ImageView imageView;
-    private Hitbox hitbox;
     private float speed;
 
     private int screenWidth;
@@ -22,8 +21,6 @@ public class Enemy {
 
     public Enemy(ImageView imageView, int screenWidth, int screenHeight){
         this.imageView = imageView;
-        hitbox = new Hitbox(imageView, HITBOX_RATIO);
-        Log.d(TAG, hitbox.toString());
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
     }
@@ -31,17 +28,16 @@ public class Enemy {
     public void update(){
         imageView.setY(imageView.getY() + speed);
         //we also want to move the hitbox of the enemy
-        hitbox.moveY(speed);
+        Log.d(TAG, "X = " + imageView.getX() + " Y = " + imageView.getY());
     }
 
     public float getSpeed() {
         return speed;
     }
 
-    public Hitbox getHitbox() {
-        return hitbox;
+    public ImageView getImageView(){
+        return imageView;
     }
-
 
     public void setSpeed(float speed) {
         this.speed = speed;
@@ -73,8 +69,14 @@ public class Enemy {
     public void resetHitboxPosition() {
         float centerX = imageView.getX() + imageView.getLayoutParams().width / 2;
         float centerY = imageView.getY() + imageView.getLayoutParams().height / 2;
+    }
 
-        hitbox.setPositionX(centerX - hitbox.getWidth() / 2);
-        hitbox.setPositionY(centerY - hitbox.getHeight() / 2);
+    @Override
+    public String toString() {
+        return "Enemy{" +
+                ", imageX=" + imageView.getX() +
+                ", imageY=" + imageView.getY() +
+                ", speed=" + speed +
+                '}';
     }
 }

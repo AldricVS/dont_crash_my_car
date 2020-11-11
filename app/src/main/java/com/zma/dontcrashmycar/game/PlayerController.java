@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.zma.dontcrashmycar.GameActivity;
@@ -31,7 +32,6 @@ public class PlayerController{
 
     private GameActivity activity;
     private ImageView playerImage;
-    private Hitbox hitbox;
 
     /**
      * All attributes relative to phone orientation management
@@ -63,7 +63,7 @@ public class PlayerController{
     public PlayerController(GameActivity activity){
         this.activity = activity;
         initPlayerSprite();
-        hitbox = new Hitbox(playerImage, HITBOX_RATIO);
+        Log.d(TAG, "X = " + playerImage.getX() + " Y = " + playerImage.getY());
         initSensor();
     }
 
@@ -77,8 +77,9 @@ public class PlayerController{
         // TODO get the car sprite depending on the shared preferences
         playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
-        playerImage.getLayoutParams().width = spriteWidth;
-        playerImage.getLayoutParams().height = spriteHeight;
+        playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
+        playerImage.setLayoutParams(layoutParams);
 
         //put player at bottom center of the screen
         playerImage.setZ(1);
@@ -97,10 +98,6 @@ public class PlayerController{
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         enableSensors();
-    }
-
-    public Hitbox getHitbox() {
-        return hitbox;
     }
 
     /**
@@ -127,9 +124,6 @@ public class PlayerController{
 
             //assign this new position to the player
             playerImage.setX(newPlayerPosX);
-
-            //move the hitbox
-            hitbox.moveX(newPlayerPosX - initialPositionX);
         }
     }
 
@@ -146,6 +140,10 @@ public class PlayerController{
      */
     public void disableSensors(){
         sensorManager.unregisterListener(orientationSensorListener);
+    }
+
+    public ImageView getImageView() {
+        return playerImage;
     }
 
     class OrientationSensorListener implements SensorEventListener{
