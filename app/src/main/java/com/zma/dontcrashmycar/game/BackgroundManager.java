@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
@@ -31,7 +32,7 @@ public class BackgroundManager {
      */
     private final int BACKGROUND_SPEED = 20;
 
-    public BackgroundManager(GameActivity activity, FrameLayout layout, int carSpriteHeight){
+    public BackgroundManager(GameActivity activity, RelativeLayout layout, int carSpriteHeight){
         this.activity = activity;
 
         //create all squares needed, and set size and position
@@ -40,13 +41,11 @@ public class BackgroundManager {
         int posX = activity.getScreenWidth() / 2 - squareSizeX / 2;
         int posY = activity.getScreenHeight() - squareSizeY;
 
-        Log.d(TAG, "squareSizeX = " + squareSizeX);
-        Log.d(TAG, "squareSizeY = " + squareSizeY);
         for (int i = 0; i < NUMBER_LINES_ON_ROAD; i++){
             ImageView square = new ImageView(activity);
             square.setImageDrawable(activity.getDrawable(R.drawable.white_square));
             //create the layout params before adding it to the image
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(squareSizeX, squareSizeY);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(squareSizeX, squareSizeY);
             square.setLayoutParams(layoutParams);
             //positioning depends on the last positioned element
             //(the first line will be stuck at the bottom of the screen  and the last will be above screen)
@@ -54,8 +53,6 @@ public class BackgroundManager {
             square.setZ(-1);
             square.setX(posX);
             square.setY(posY);
-
-            Log.d(TAG, "Square " + i + " at position Y=" +posY);
 
 
             //decrease position by [square height] + [half square height] in order to have space between each other (as in a real road)
