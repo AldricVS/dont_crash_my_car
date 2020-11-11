@@ -44,6 +44,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
+        android:translationZ="3dp"
         android:background="@color/transparent_black">
 
         <TextView
@@ -61,12 +62,14 @@
             android:layout_width="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
+            android:onClick="resumeGame"
             android:text="@string/button_resume_label" />
 
         <Button
             android:id="@+id/buttonQuitGame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="quitGame"
             android:text="@string/button_quit_game_label" />
     </LinearLayout>
 
