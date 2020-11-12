@@ -26,6 +26,7 @@ public class GameActivity extends AppCompatActivity {
     private EnemiesManager enemiesManager;
 
     private RelativeLayout relativeLayout;
+    private LinearLayout uiLayout;
     private LinearLayout pauseLayout;
     private TextView scoreTextView;
 
@@ -55,6 +56,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         relativeLayout = (RelativeLayout)findViewById(R.id.frameLayout);
+        uiLayout = (LinearLayout)findViewById(R.id.ui_layout);
         pauseLayout = (LinearLayout)findViewById(R.id.pause_layout);
         scoreTextView = (TextView) findViewById(R.id.scoreTextView);
 
@@ -90,14 +92,12 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        //A to this method when the game is already not active will only cost one boolean verification
-        setGameActive(false);
     }
 
     @Override
     protected void onDestroy() {
-        setGameActive(false);
         super.onDestroy();
+        setGameActive(false);
     }
 
     /**
@@ -120,11 +120,13 @@ public class GameActivity extends AppCompatActivity {
             //if active == false, this will also stop the current thread
             isPlaying = active;
             if(active){
+                uiLayout.setVisibility(View.VISIBLE);
                 pauseLayout.setVisibility(View.INVISIBLE);
                 playerController.enableSensors();
                 gameThread = new GameThread();
                 gameThread.start();
             }else{
+                uiLayout.setVisibility(View.INVISIBLE);
                 pauseLayout.setVisibility(View.VISIBLE);
                 playerController.disableSensors();
             }
