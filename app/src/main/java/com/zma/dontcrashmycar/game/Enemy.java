@@ -28,7 +28,6 @@ public class Enemy {
     public void update(){
         imageView.setY(imageView.getY() + speed);
         //we also want to move the hitbox of the enemy
-        Log.d(TAG, "X = " + imageView.getX() + " Y = " + imageView.getY());
     }
 
     public float getSpeed() {

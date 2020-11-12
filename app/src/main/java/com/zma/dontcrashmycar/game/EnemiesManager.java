@@ -3,6 +3,7 @@ package com.zma.dontcrashmycar.game;
 import android.graphics.drawable.Drawable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
@@ -34,7 +35,7 @@ public class EnemiesManager {
     /**
      * When wanted, enemy speed can be increased by a specific amount
      */
-    private final float ENEMY_SPEED_MULTIPLIER = 1.2f;
+    private final float ENEMY_SPEED_MULTIPLIER = 1.5f;
 
     /**
      * The bigger this value is, the more tolerant the game is about collisions.
@@ -57,7 +58,7 @@ public class EnemiesManager {
      * @param layout the layout where add sprites.
      * @param numberOfEnemies the number of enemies to create.
      */
-    public EnemiesManager(GameActivity activity, FrameLayout layout, int numberOfEnemies){
+    public EnemiesManager(GameActivity activity, RelativeLayout layout, int numberOfEnemies){
         screenHeight = activity.getScreenHeight();
         screenWidth = activity.getScreenWidth();
         //init the enemies sprite
@@ -68,7 +69,7 @@ public class EnemiesManager {
             ImageView enemyImage = new ImageView(activity);
             enemyImage.setImageDrawable(enemyDrawable);
             enemyImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(spriteWidth, spriteHeight);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
             enemyImage.setLayoutParams(layoutParams);
             //create a new instance of enemy
             Enemy enemy = new Enemy(enemyImage, screenWidth, screenHeight);
