@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:text="12454"
-            android:textAlignment="center"
+            android:textAlignment="textEnd"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -46,10 +46,11 @@
         android:id="@+id/pause_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/transparent_black"
         android:gravity="center"
         android:orientation="vertical"
         android:translationZ="3dp"
-        android:background="@color/transparent_black">
+        android:visibility="invisible">
 
         <TextView
             android:id="@+id/textView4"
@@ -64,8 +65,8 @@
         <Button
             android:id="@+id/buttonResumeGame"
             android:layout_width="wrap_content"
-            android:layout_marginBottom="20dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:onClick="resumeGame"
             android:text="@string/button_resume_label" />
 
