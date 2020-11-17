@@ -1,12 +1,15 @@
 package com.zma.dontcrashmycar.game;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
@@ -20,6 +23,13 @@ import com.zma.dontcrashmycar.R;
  */
 public class PlayerController{
     private final String TAG = "PlayerController";
+
+    /**
+     * Hitbox ratio of the player's car (depends on the size of the player's sprite)
+     * ONLY BETWEEN 0f and 1f.
+     */
+    private final float HITBOX_RATIO = 0.9f;
+
 
     private GameActivity activity;
     private ImageView playerImage;
@@ -67,8 +77,9 @@ public class PlayerController{
         // TODO get the car sprite depending on the shared preferences
         playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
         //we have to set size of sprites depending on the screen size
-        playerImage.getLayoutParams().width = spriteWidth;
-        playerImage.getLayoutParams().height = spriteHeight;
+        playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
+        playerImage.setLayoutParams(layoutParams);
 
         //put player at bottom center of the screen
         playerImage.setZ(1);
@@ -95,11 +106,14 @@ public class PlayerController{
     public void updatePlayerMovement(){
         //check if rotation value is greater than threshold (in order to don't count very little movements)
         if(Math.abs(rollOrientation) > ROTATION_THRESHOLD){
+            //store the initial position for hitbox movement
+            float initialPositionX = playerImage.getX();
+
             //the speed of the movement depends on the angle of the rotation (a small rotation will make the player go slowly and vice versa)
             float movementVectorX = rollOrientation * PLAYER_SPEED;
 
             //now calculate the new position of the player : it must not be out of the screen of course
-            float newPlayerPosX = playerImage.getX();
+            float newPlayerPosX = initialPositionX;
             newPlayerPosX += movementVectorX;
 
             if(newPlayerPosX < leftLimitPosX) {
@@ -128,6 +142,10 @@ public class PlayerController{
         sensorManager.unregisterListener(orientationSensorListener);
     }
 
+    public ImageView getImageView() {
+        return playerImage;
+    }
+
     class OrientationSensorListener implements SensorEventListener{
         private final String TAG_LISTENER = "OrientationSensorListener";
         @Override
@@ -142,20 +160,16 @@ public class PlayerController{
                         magneticValues = event.values.clone();
                         break;
                     default:
-                        Log.w(TAG_LISTENER, "Wrong sensor type");
                         return;
                 }
 
                 //calculate the rotation of the device
                 boolean isRotationSuccessful = SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerValues, magneticValues);
-                //Log.i(TAG_LISTENER, String.format("New roll values : %f", rotationMatrix[0]));
                 //SensorManager#getRotationMatrix can not return result under certain conditions (as a free fall of the device, unlikely to produce when playing though)
                 if(isRotationSuccessful){
                     float orientationValues[] = new float[3];
                     SensorManager.getOrientation(rotationMatrix, orientationValues);
                     rollOrientation = orientationValues[2];
-                    //Log.d(TAG_LISTENER, String.format("New orientation values : Pitch=%f, Yaw=%f, Roll=%f", orientationValues[0], orientationValues[1], orientationValues[2]));
-                    //Log.i(TAG_LISTENER, "rollOrientation = " + rollOrientation);
                 }
             }
 
