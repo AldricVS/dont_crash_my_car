@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public void chooseCar(View view) {
         Intent intent = new Intent(this, CarChooserActivity.class);
         startActivity(intent);
+        finish();
     }
 
     /**
