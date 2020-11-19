@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CarChooserActivity">
+    tools:context=".CarChooserActivity"
+    tools:ignore="HardcodedText">
 
     <TextView
         android:id="@+id/textView"
@@ -21,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <GridLayout
         android:id="@+id/carChooser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,5 +32,72 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
-    </LinearLayout>
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+        <ImageButton
+            android:layout_width="126dp"
+            android:layout_height="172dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:cropToPadding="true"
+            android:orientation="horizontal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/car"
+            android:contentDescription="Car" />
+
+    </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
