@@ -1,6 +1,8 @@
 package com.zma.dontcrashmycar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 
@@ -29,5 +31,12 @@ public class CarChooserActivity extends AppCompatActivity {
             carList.addView(ImgButton);
         }
 
+    }
+
+
+    public void previous(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

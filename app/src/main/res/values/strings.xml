@@ -18,4 +18,5 @@
     <string name="pause_title">Pause</string>
     <string name="button_resume_label">Resume</string>
     <string name="button_quit_game_label">Quit game</string>
+    <string name="previous">Return</string>
 </resources>

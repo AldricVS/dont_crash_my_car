@@ -28,10 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/Return">
 
         <ImageButton
             android:layout_width="126dp"
@@ -100,4 +100,15 @@
             android:contentDescription="Car" />
 
     </GridLayout>
+
+    <Button
+        android:id="@id/Return"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="32dp"
+        android:onClick="previous"
+        android:text="@string/previous"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
