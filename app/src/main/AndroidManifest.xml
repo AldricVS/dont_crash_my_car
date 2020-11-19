@@ -12,6 +12,9 @@
         <activity android:name=".GameActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".CarChooserActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>

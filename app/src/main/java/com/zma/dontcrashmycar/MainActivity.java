@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
      * Go to the CarChooserActivity
      */
     public void chooseCar(View view) {
-
+        Intent intent = new Intent(this, CarChooserActivity.class);
+        startActivity(intent);
     }
 
     /**
