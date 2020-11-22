@@ -1,6 +1,7 @@
 package com.zma.dontcrashmycar.game;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,6 +14,8 @@ import android.widget.RelativeLayout;
 
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
+
+import java.util.Map;
 
 /**
  * Used to control player with the orientation of the phone
@@ -32,6 +35,7 @@ public class PlayerController{
 
 
     private GameActivity activity;
+    private SharedPreferences sharedPrefs;
     private ImageView playerImage;
 
     /**
@@ -63,6 +67,7 @@ public class PlayerController{
      */
     public PlayerController(GameActivity activity){
         this.activity = activity;
+        this.sharedPrefs = activity.getSharedPreferences(activity.getString(R.string.carUsed), Context.MODE_PRIVATE);
         initPlayerSprite();
         initSensor();
     }
@@ -75,7 +80,8 @@ public class PlayerController{
         //load the player sprite (already added to the view)
         playerImage = activity.findViewById(R.id.playerCar);
         // TODO get the car sprite depending on the shared preferences
-        playerImage.setImageDrawable(activity.getDrawable(R.drawable.car));
+
+        playerImage.setImageDrawable(activity.getDrawable(R.drawable.car_default));
         //we have to set size of sprites depending on the screen size
         playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
