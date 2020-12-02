@@ -30,8 +30,8 @@ public class CarChooserActivity extends AppCompatActivity {
         setContentView(layout.activity_carchooser);
         sharedPrefs = getSharedPreferences(getString(string.carUsed), Context.MODE_PRIVATE);
 
-        createCarList();
-        showCarList();
+        //createCarList();
+        //showCarList();
     }
 
     private void createCarList() {
@@ -70,7 +70,7 @@ public class CarChooserActivity extends AppCompatActivity {
     private ImageButton createCarImage(int imageRessource) {
         //create the ImageButton
         ImageButton ImgButton = new ImageButton(this);
-        ImgButton.findViewById(id.carButton);
+        //ImgButton.findViewById(id.carButton);
         //Add the Image on the Button
         ImgButton.setImageResource(imageRessource);
         ImgButton.setOnClickListener(new View.OnClickListener() {
