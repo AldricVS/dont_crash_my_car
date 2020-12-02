@@ -3,6 +3,8 @@ package com.zma.dontcrashmycar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridLayout;
@@ -10,10 +12,14 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.zma.dontcrashmycar.R.*;
 
 public class CarChooserActivity extends AppCompatActivity {
-    GridLayout carList;
+    GridLayout carLayout;
+    List<String> carList;
     ImageButton ImgButton;
     SharedPreferences sharedPrefs;
     SharedPreferences.Editor editor;
@@ -24,39 +30,58 @@ public class CarChooserActivity extends AppCompatActivity {
         setContentView(layout.activity_carchooser);
         sharedPrefs = getSharedPreferences(getString(string.carUsed), Context.MODE_PRIVATE);
 
-        //createCarList();
-        //showCarList();
+        createCarList();
+        showCarList();
     }
 
     private void createCarList() {
         //méthode qui doit servir à récupérer le combo int / images des voitures
+        carList = new ArrayList<String>();
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
+        carList.add("default");
     }
 
     private void showCarList() {
-        carList = findViewById(id.carChooser);
-        carList.setColumnCount(3);
-        carList.setRowCount(5);
+        //get The Layout with all cars in
+        carLayout = findViewById(id.carChooser);
+
+        //define number of item on a row
+        int nbrCar = carList.size();
+        int rowCount = nbrCar / 3;
+        carLayout.setColumnCount(3);
+        carLayout.setRowCount(rowCount + 1);
+
         //On traversera la liste d'image de voiture
-        for (int i = 0; i < 12; i++) {
-            ImgButton = createCarImage(drawable.car_default);
+        for (int i = 0; i < nbrCar; i++) {
+            ImgButton = createCarImage(R.drawable.car_default);
             ImgButton.setTag(i);
-            carList.addView(ImgButton);
+            carLayout.addView(ImgButton);
         }
+        //carLayout.removeViewAt(0);
     }
 
-    private ImageButton createCarImage(int img) {
+    private ImageButton createCarImage(int imageRessource) {
+        //create the ImageButton
         ImageButton ImgButton = new ImageButton(this);
-        //ImgButton.findViewById(id.carButton);
-
-        ImgButton.setImageResource(img);
+        ImgButton.findViewById(id.carButton);
+        //Add the Image on the Button
+        ImgButton.setImageResource(imageRessource);
         ImgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //change la voiture choisi par celle selectionné
                 //TODO prérequis de score à avoir
                 editor = sharedPrefs.edit();
-                editor.putInt(getString(R.string.carUsed), img);
+                editor.putInt(getString(R.string.carUsed), imageRessource);
                 editor.apply();
+                ImgButton.setBackgroundColor(Color.GREEN);
             }
         }
         );
