@@ -9,6 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DontCrashMyCar">
+        <activity android:name=".ScoresTableActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".GameActivity"
             android:screenOrientation="portrait">
         </activity>
