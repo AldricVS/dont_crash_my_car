@@ -30,14 +30,16 @@ public class MainActivity extends AppCompatActivity {
      * Go to the CarChooserActivity
      */
     public void chooseCar(View view) {
-
+        Intent intent = new Intent(this, CarChooserActivity.class);
+        startActivity(intent);
     }
 
     /**
      * Go to the scores activity (with empty intent, because we don't have registered any new score)
      */
     public void seeScores(View view) {
-
+        Intent intent = new Intent(this, ScoresTableActivity.class);
+        startActivity(intent);
     }
 
     /**
