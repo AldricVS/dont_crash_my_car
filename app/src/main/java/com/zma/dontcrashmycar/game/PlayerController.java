@@ -67,7 +67,7 @@ public class PlayerController{
      */
     public PlayerController(GameActivity activity){
         this.activity = activity;
-        this.sharedPrefs = activity.getSharedPreferences(activity.getString(R.string.carUsed), Context.MODE_PRIVATE);
+        this.sharedPrefs = activity.getSharedPreferences(activity.getString(R.string.prefs_car_key), Context.MODE_PRIVATE);
         initPlayerSprite();
         initSensor();
     }

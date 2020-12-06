@@ -18,15 +18,11 @@
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/carChooser_scroll"
+        app:layout_constraintBottom_toTopOf="@+id/carChooser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/carChooser_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
     <GridLayout
         android:id="@+id/carChooser"
         android:layout_width="match_parent"
@@ -36,10 +32,11 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="16dp"
-        android:columnCount="3"
         android:orientation="vertical"
-        android:rowCount="3"
-        android:rowOrderPreserved="false"
+        android:scrollbars="vertical"
+        android:transcriptMode="alwaysScroll"
+        android:columnCount="3"
+        android:rowCount="2"
         app:layout_constraintBottom_toTopOf="@+id/Return"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +47,10 @@
             android:layout_height="200dp"
             android:layout_row="0"
             android:layout_column="0"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
@@ -60,7 +60,10 @@
             android:layout_height="200dp"
             android:layout_row="0"
             android:layout_column="1"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
@@ -70,7 +73,10 @@
             android:layout_height="200dp"
             android:layout_row="0"
             android:layout_column="2"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
@@ -80,7 +86,10 @@
             android:layout_height="200dp"
             android:layout_row="1"
             android:layout_column="0"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
@@ -90,7 +99,10 @@
             android:layout_height="200dp"
             android:layout_row="1"
             android:layout_column="1"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
@@ -100,43 +112,15 @@
             android:layout_height="200dp"
             android:layout_row="1"
             android:layout_column="2"
+            android:src="@drawable/car_default"
+            android:id="@integer/carDefaultId"
             android:contentDescription="Car"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
-
-        <ImageButton
-            android:layout_width="130dp"
-            android:layout_height="200dp"
-            android:layout_row="2"
-            android:layout_column="0"
-            android:contentDescription="Car"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
-
-        <ImageButton
-            android:layout_width="130dp"
-            android:layout_height="200dp"
-            android:layout_row="2"
-            android:layout_column="1"
-            android:contentDescription="Car"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
-
-        <ImageButton
-            android:layout_width="130dp"
-            android:layout_height="200dp"
-            android:layout_row="2"
-            android:layout_column="2"
-            android:contentDescription="Car"
+            android:onClick="selectCar"
             android:cropToPadding="true"
             android:orientation="horizontal"
             android:scaleType="fitCenter" />
 
     </GridLayout>
-    </ScrollView>
 
     <Button
         android:id="@id/Return"

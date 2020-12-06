@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
@@ -28,51 +29,23 @@ public class CarChooserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_carchooser);
-        sharedPrefs = getSharedPreferences(getString(string.carUsed), Context.MODE_PRIVATE);
+        ImgButton = new ImageButton(this);
+        sharedPrefs = getSharedPreferences(getString(string.prefs_car_key), Context.MODE_PRIVATE);
+        int carUsingId = sharedPrefs.getInt(String.valueOf(R.integer.carUsingId), 0);
+        Log.i("ID car saved", ""+carUsingId);
+        if (carUsingId != 0) {
+            ImgButton.findViewById(carUsingId);
+            ImgButton.setBackgroundColor(Color.GREEN);
+        }
 
-        //createCarList();
-        //showCarList();
     }
-
-    private void createCarList() {
-        //méthode qui doit servir à récupérer le combo int / images des voitures
-        carList = new ArrayList<String>();
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-        carList.add("default");
-    }
-
+/*
     private void showCarList() {
         //get The Layout with all cars in
         carLayout = findViewById(id.carChooser);
-
-        //define number of item on a row
-        int nbrCar = carList.size();
-        int rowCount = nbrCar / 3;
-        carLayout.setColumnCount(3);
-        carLayout.setRowCount(rowCount + 1);
-
-        //On traversera la liste d'image de voiture
-        for (int i = 0; i < nbrCar; i++) {
-            ImgButton = createCarImage(R.drawable.car_default);
-            ImgButton.setTag(i);
-            carLayout.addView(ImgButton);
-        }
-        //carLayout.removeViewAt(0);
     }
 
     private ImageButton createCarImage(int imageRessource) {
-        //create the ImageButton
-        ImageButton ImgButton = new ImageButton(this);
-        //ImgButton.findViewById(id.carButton);
-        //Add the Image on the Button
-        ImgButton.setImageResource(imageRessource);
         ImgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,13 +56,22 @@ public class CarChooserActivity extends AppCompatActivity {
                 editor.apply();
                 ImgButton.setBackgroundColor(Color.GREEN);
             }
-        }
-        );
-
-        return ImgButton;
     }
+*/
 
-
+    public void selectCar(View view) {
+        int Id = view.getId();
+        Log.i("ID car choosen", ""+Id);
+        int oldId = sharedPrefs.getInt(String.valueOf(R.integer.carUsingId), 0);
+        Log.i("ID old car", ""+oldId);
+        editor = sharedPrefs.edit();
+        editor.putInt(String.valueOf(integer.carUsingId), Id);
+        editor.apply();
+        ImgButton.findViewById(oldId);
+        ImgButton.setBackgroundColor(Color.TRANSPARENT);
+        ImgButton.findViewById(Id);
+        ImgButton.setBackgroundColor(Color.GREEN);
+    }
 
     public void previous(View view) {
         Intent intent = new Intent(this, MainActivity.class);
