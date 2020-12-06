@@ -30,10 +30,10 @@ public class ScoresTableActivity extends AppCompatActivity {
     }
 
     /**
-     * allows to return in the choosecar activity
+     * allows to return in the main menu activity
      */
-    public void returnInChoose(View view) {
-        Intent intent = new Intent(this, CarChooserActivity.class);
+    public void returnInMain(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }

@@ -22,8 +22,8 @@
             android:id="@+id/Choose_car"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Choose Skill"
-            android:onClick="ReturnInChoose"
+            android:text="Main Menu"
+            android:onClick="ReturnInMain"
             tools:ignore="MissingConstraints" />
     </LinearLayout>
 
