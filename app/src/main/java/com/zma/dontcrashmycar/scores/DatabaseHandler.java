@@ -5,24 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-
-    private final String TAG = "DatabaseHandler";
 
     // Database version
     private static final int DATABASE_VERSION = 1;
 
     // Database name
-    private static final String DATABASE_NAME = "eventManager";
+    private static final String DATABASE_NAME = "scoreManager";
 
     // Table name
-    private static final String TABLE_EVENTS = "utilisateur";
+    private static final String TABLE_EVENTS = "scores";
 
     // Table columns names
     private static final String KEY_ID = "id";
@@ -44,24 +41,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Create the table
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d(TAG, "Create table event");
         db.execSQL(QUERY_CREATE_TABLE);
+        botScores(db);
     }
 
     // Upgrade the database
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(TAG, "Upgrade");
-
         // Drop older table if existed
-        db.execSQL(QUERY_DROP_TABLE);
+        //db.execSQL(QUERY_DROP_TABLE);
 
         // Create tables again
         onCreate(db);
     }
 
     // Add a new row
-    void addRow(Event e) {
+    public void addRow(Event e) {
         SQLiteDatabase db = getWritableDatabase();
 
         //put values in ContentValues before sending it to the database (ID will be auto-increment)
@@ -71,6 +66,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_SCORE, e.getScore());
 
         db.insert(TABLE_EVENTS, null, values);
+        db.close();
+    }
+    public void botScores(SQLiteDatabase db){
+        Random rand = new Random();
+        int score_bot;
+        for(int i =1;i<=30;i++){
+            score_bot = rand.nextInt(100000-50);
+            Event e = new Event(i,"bot",score_bot);
+            addRow(e);
+        }
     }
 
     // Get all rows
@@ -83,36 +88,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // - Loop through all the rows and add the to a list                                      //
         // - Return the list                                                                      //
         ////////////////////////////////////////////////////////////////////////////////////////////
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursorResult = db.rawQuery("SELECT * FROM " + TABLE_EVENTS, null);
 
-        Log.d(TAG, "Number of rows in database : " + cursorResult.getCount());
+        /*if(cursorResult!=null){
+            //check if have any result
+            if (cursorResult.moveToFirst()) {
+                //go through all rows and extract event from it
+                do {
+                    Event event = new Event();
 
-        //check if have any result
-        if(cursorResult.moveToFirst()){
-            //go through all rows and extract event from it
-            while(!cursorResult.isAfterLast()) {
-                Event event = new Event();
+                    event.setID(cursorResult.getInt(0));
+                    event.setNameUser(cursorResult.getString(1));
+                    event.setScore(cursorResult.getInt(2));
 
-                event.setID(cursorResult.getInt(cursorResult.getColumnIndex(KEY_ID)));
-                event.setNameUser(cursorResult.getString(cursorResult.getColumnIndex(KEY_NAME_USER)));
-                event.setScore(cursorResult.getInt(cursorResult.getColumnIndex(KEY_SCORE)));
-
-                eventList.add(event);
-                cursorResult.moveToNext();
+                    eventList.add(event);
+                } while (cursorResult.moveToNext());
             }
         }
-        cursorResult.close();
-        Log.d(TAG, "Send eventList");
+        cursorResult.close();*/
         return eventList;
     }
-
+    /*
     // Clear the table
     public void clear() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_EVENTS);
         db.close();
     }
+
+     */
+
+    /*
 
     //create the table if not exists
     public void createTable() {
@@ -145,6 +152,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int max_score = cursorResult.getInt(cursorResult.getColumnIndex(KEY_SCORE));
         db.close();
         return max_score;
-    }
+    }*/
 
 }
