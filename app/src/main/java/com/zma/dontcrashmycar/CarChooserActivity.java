@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,15 +12,21 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.zma.dontcrashmycar.R.*;
 
+/**
+ * Activity to let the player choose which car he want
+ * Based on his maximum Score, he can unlock more car
+ * @author Maxence
+ */
 public class CarChooserActivity extends AppCompatActivity {
+    private final static String TAG = "CarChooser";
+    public final static String CAR_COLOR_REFERENCE = "carColor";
+    public final static String CAR_COLOR_DEFAULT = "red";
+
     GridLayout carLayout;
-    List<String> carList;
-    ImageButton ImgButton;
     SharedPreferences sharedPrefs;
     SharedPreferences.Editor editor;
 
@@ -29,50 +34,66 @@ public class CarChooserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_carchooser);
-        ImgButton = new ImageButton(this);
-        sharedPrefs = getSharedPreferences(getString(string.prefs_car_key), Context.MODE_PRIVATE);
-        int carUsingId = sharedPrefs.getInt(String.valueOf(R.integer.carUsingId), 0);
-        Log.i("ID car saved", ""+carUsingId);
-        if (carUsingId != 0) {
-            ImgButton.findViewById(carUsingId);
-            ImgButton.setBackgroundColor(Color.GREEN);
-        }
 
-    }
-/*
-    private void showCarList() {
-        //get The Layout with all cars in
         carLayout = findViewById(id.carChooser);
+        sharedPrefs = getSharedPreferences(getString(string.prefs_car_key), Context.MODE_PRIVATE);
+        //TODO enpecher la selection base sur le score
+
+        //Now, we show which car the player have selected, base on the value from sharedPrefs
+        resetCarBackground();
+        String carColor = sharedPrefs.getString(CAR_COLOR_REFERENCE, CAR_COLOR_DEFAULT);
+        drawSelectedCar(carColor);
+
     }
 
-    private ImageButton createCarImage(int imageRessource) {
-        ImgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //change la voiture choisi par celle selectionné
-                //TODO prérequis de score à avoir
-                editor = sharedPrefs.edit();
-                editor.putInt(getString(R.string.carUsed), imageRessource);
-                editor.apply();
-                ImgButton.setBackgroundColor(Color.GREEN);
-            }
-    }
-*/
-
+    /**
+     * Called when the user press on an ImageButton to choose a new car
+     * @param view
+     */
     public void selectCar(View view) {
-        int Id = view.getId();
-        Log.i("ID car choosen", ""+Id);
-        int oldId = sharedPrefs.getInt(String.valueOf(R.integer.carUsingId), 0);
-        Log.i("ID old car", ""+oldId);
+        String imgTag = view.getTag().toString();
+        Log.i(TAG, imgTag);
+        resetCarBackground();
+        drawSelectedCar(imgTag);
+
         editor = sharedPrefs.edit();
-        editor.putInt(String.valueOf(integer.carUsingId), Id);
+        editor.putString(CAR_COLOR_REFERENCE, imgTag);
         editor.apply();
-        ImgButton.findViewById(oldId);
-        ImgButton.setBackgroundColor(Color.TRANSPARENT);
-        ImgButton.findViewById(Id);
-        ImgButton.setBackgroundColor(Color.GREEN);
     }
 
+    /**
+     * Set the background to DarkGrey for all element in carLayout
+     */
+    private void resetCarBackground() {
+        View carView;
+        for (int i = 0; i<carLayout.getChildCount(); i++) {
+            carView = carLayout.getChildAt(i);
+            if (carView instanceof ImageButton) {
+                carView.setBackgroundColor(Color.DKGRAY);
+            }
+        }
+    }
+
+    /**
+     * Set the background to Green for the selected element in carLayout
+     * @param selectedCar the car to be shown in Green
+     */
+    private void drawSelectedCar(String selectedCar) {
+        View carView;
+        for (int i = 0; i<carLayout.getChildCount(); i++) {
+            carView = carLayout.getChildAt(i);
+            if (carView instanceof ImageButton) {
+                if (carView.getTag().equals(selectedCar)) {
+                    carView.setBackgroundColor(Color.GREEN);
+                }
+            }
+        }
+    }
+
+    /**
+     * return to the MainActivity
+     * @param view
+     */
     public void previous(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

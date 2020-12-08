@@ -21,4 +21,5 @@
     <!--CAR CHOOSER ACTIVITY-->
     <string name="previous">Return</string>
     <string name="prefs_car_key">carValuesKey</string>
+    <string name="carTag">car_default</string>
 </resources>

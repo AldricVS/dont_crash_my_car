@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.zma.dontcrashmycar.CarChooserActivity;
 import com.zma.dontcrashmycar.GameActivity;
 import com.zma.dontcrashmycar.R;
 
@@ -72,6 +73,9 @@ public class PlayerController{
         initSensor();
     }
 
+    /**
+     * Initialize the sprite of the player used in game
+     */
     private void initPlayerSprite(){
         int spriteWidth = activity.getSpriteWidth();
         int spriteHeight = activity.getSpriteHeight();
@@ -79,9 +83,13 @@ public class PlayerController{
 
         //load the player sprite (already added to the view)
         playerImage = activity.findViewById(R.id.playerCar);
-        // TODO get the car sprite depending on the shared preferences
+        String carColor = sharedPrefs.getString(CarChooserActivity.CAR_COLOR_REFERENCE, CarChooserActivity.CAR_COLOR_DEFAULT);
+        String carSkinName = "@drawable/car_"+carColor;
 
-        playerImage.setImageDrawable(activity.getDrawable(R.drawable.car_default));
+        //now that we have a reference to the selected car, change the skin to it
+        int imageResource = activity.getResources().getIdentifier(carSkinName, String.valueOf(R.drawable.car_red), activity.getPackageName());
+        playerImage.setImageDrawable(activity.getDrawable(imageResource));
+
         //we have to set size of sprites depending on the screen size
         playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
