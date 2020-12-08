@@ -28,7 +28,6 @@ public class ScoresTableActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scores);
         //sharedPrefs = getSharedPreferences(getString(R.string.carUsed), Context.MODE_PRIVATE);
 
-
         //if database is empty, add 30 random scores from 30 random players
         if(db.isTableEmpty()){
             db.fillTableRandom();
