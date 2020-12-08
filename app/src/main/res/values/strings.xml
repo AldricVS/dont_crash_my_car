@@ -20,5 +20,6 @@
     <string name="button_quit_game_label">Quit game</string>
     <!--CAR CHOOSER ACTIVITY-->
     <string name="previous">Return</string>
-    <string name="carUsed">default</string>
+    <string name="prefs_car_key">carValuesKey</string>
+    <string name="carTag">car_default</string>
 </resources>
