@@ -2,17 +2,13 @@ package com.zma.dontcrashmycar.scores;
 
 import java.io.Serializable;
 
-public class Event implements Serializable {
+public class PlayerData implements Serializable {
 
     int id;
     String name_user;
     int score;
 
-    public Event() {
-
-    }
-
-    public Event(int id, String name_user, int score) {
+    public PlayerData(int id, String name_user, int score) {
         this.id = id;
         this.name_user = name_user;
         this.score = score;
@@ -29,11 +25,11 @@ public class Event implements Serializable {
     }
 
     // User Name
-    public String getNameUser() {
+    public String getName() {
         return this.name_user;
     }
 
-    public void setNameUser(String name_user) {
+    public void setName(String name_user) {
         this.name_user = name_user;
     }
 
@@ -45,7 +41,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "Event{" +
+        return "PlayerData{" +
                 "id=" + id +
                 ", name user='" + name_user + '\'' +
                 ", score=" + score +

@@ -1,6 +1,5 @@
 package com.zma.dontcrashmycar;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,9 +9,8 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.zma.dontcrashmycar.scores.DatabaseCreate;
-import com.zma.dontcrashmycar.scores.DatabaseHandler;
-import com.zma.dontcrashmycar.scores.Event;
+import com.zma.dontcrashmycar.scores.DatabaseManager;
+import com.zma.dontcrashmycar.scores.PlayerData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +19,21 @@ import java.util.List;
 public class ScoresTableActivity extends AppCompatActivity {
     SharedPreferences sharedPrefs;
     //DatabaseHandler db = new DatabaseHandler(this);
-    DatabaseCreate db = new DatabaseCreate(this);
-    List<String> scores = new ArrayList();
+    DatabaseManager db = new DatabaseManager(this);
+    List<PlayerData> scores = new ArrayList();
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
         //sharedPrefs = getSharedPreferences(getString(R.string.carUsed), Context.MODE_PRIVATE);
-        DisplayScores("player");
+
+
+        //if database is empty, add 30 random scores from 30 random players
+        if(db.isTableEmpty()){
+            db.fillTableRandom();
+        }
+        displayScores("player");
         //createTable();
     }
 
@@ -45,7 +49,7 @@ public class ScoresTableActivity extends AppCompatActivity {
     /**
      * allows to return in the main menu activity
      */
-    public void returnInMain(View view) {
+    public void returnToMainMenu(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -65,12 +69,12 @@ public class ScoresTableActivity extends AppCompatActivity {
      * retrieve all rows in this ArrayList to Display it
      * @param name_user
      */
-    public void DisplayScores(String name_user){
-        //scores = db.getAllRows();
+    public void displayScores(String name_user){
+        scores = db.getAllRows();
         scores = db.getAllRows();
         // Create ListView
-        //ListView listView = findViewById(R.id.Scores_Table);
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.activity_list_item, scores);
-        //listView.setAdapter(arrayAdapter);
+        ListView listView = (ListView) findViewById(R.id.Scores_Table);
+        ArrayAdapter<PlayerData> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores);
+        listView.setAdapter(arrayAdapter);
     }
 }

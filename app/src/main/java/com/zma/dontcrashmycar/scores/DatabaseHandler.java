@@ -56,13 +56,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // Add a new row
-    public void addRow(Event e) {
+    public void addRow(PlayerData e) {
         SQLiteDatabase db = getWritableDatabase();
 
         //put values in ContentValues before sending it to the database (ID will be auto-increment)
         ContentValues values = new ContentValues();
         values.put(KEY_ID, e.getID());
-        values.put(KEY_NAME_USER, e.getNameUser());
+        values.put(KEY_NAME_USER, e.getName());
         values.put(KEY_SCORE, e.getScore());
 
         db.insert(TABLE_EVENTS, null, values);
@@ -73,14 +73,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int score_bot;
         for(int i =1;i<=30;i++){
             score_bot = rand.nextInt(100000-50);
-            Event e = new Event(i,"bot",score_bot);
+            PlayerData e = new PlayerData(i,"bot",score_bot);
             addRow(e);
         }
     }
 
     // Get all rows
-    public List<Event> getAllRows() {
-        List<Event> eventList = new ArrayList<>();
+    public List<PlayerData> getAllRows() {
+        List<PlayerData> eventList = new ArrayList<>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         // TODO                                                                                   //

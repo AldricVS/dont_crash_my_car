@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Main Menu"
-            android:onClick="ReturnInMain"
+            android:onClick="returnToMainMenu"
             tools:ignore="MissingConstraints" />
     </LinearLayout>
 
