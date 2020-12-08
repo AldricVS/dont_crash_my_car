@@ -89,7 +89,7 @@ public class PlayerController{
         //now that we have a reference to the selected car, change the skin to it
         int imageResource = activity.getResources().getIdentifier(carSkinName, String.valueOf(R.drawable.car_red), activity.getPackageName());
         playerImage.setImageDrawable(activity.getDrawable(imageResource));
-
+      
         //we have to set size of sprites depending on the screen size
         playerImage.setScaleType(ImageView.ScaleType.FIT_XY);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);

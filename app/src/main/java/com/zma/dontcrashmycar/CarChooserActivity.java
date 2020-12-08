@@ -12,8 +12,6 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.List;
-
 import static com.zma.dontcrashmycar.R.*;
 
 /**
