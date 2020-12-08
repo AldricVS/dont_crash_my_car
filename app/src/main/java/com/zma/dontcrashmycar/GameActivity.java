@@ -44,6 +44,8 @@ public class GameActivity extends AppCompatActivity {
 
     private final int TIME_BETWEEN_FRAMES = 16;
 
+    public static final String SCORE_INTENT_EXTRA = "Score";
+
     /*
      * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
      */
@@ -194,15 +196,14 @@ public class GameActivity extends AppCompatActivity {
      */
     private void checkForCollision(){
         if(enemiesManager.isThereCollision(playerController)){
-            //TODO collision happened, end the game and go to scores
             //we have to stop the game (i.e the game thread)
             isPlaying = false;
 
-            ///TODO : this is for testing purposes, we have to do as the javadoc above says instead
-            //launch main menu activity and destroy the game activity
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            //launch score activity (with score in extras) and destroy the game activity
+            Intent intent = new Intent(GameActivity.this, ScoresTableActivity.class);
+            intent.putExtra(SCORE_INTENT_EXTRA, score.getScore());
             finish();
+            startActivity(intent);
         }
     }
 
