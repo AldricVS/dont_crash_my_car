@@ -22,6 +22,8 @@
         <activity android:name=".CarChooserActivity"
             android:screenOrientation="portrait">
         </activity>
+        <service android:name=".scores.SaveScoreService"/>
+
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>

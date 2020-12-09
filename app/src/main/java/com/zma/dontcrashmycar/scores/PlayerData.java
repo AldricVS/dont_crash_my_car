@@ -2,6 +2,10 @@ package com.zma.dontcrashmycar.scores;
 
 import java.io.Serializable;
 
+/**
+ * this class represents data to string in table score and stored in the database
+ * @author Zacharie
+ */
 public class PlayerData implements Serializable {
 
     int id;
@@ -41,10 +45,8 @@ public class PlayerData implements Serializable {
 
     @Override
     public String toString() {
-        return "PlayerData{" +
-                "id=" + id +
-                ", name user='" + name_user + '\'' +
-                ", score=" + score +
-                '}';
+        return "Le joueur : " +
+                "'" + name_user + '\'' +
+                "a obtenu le score : " + score ;
     }
 }
