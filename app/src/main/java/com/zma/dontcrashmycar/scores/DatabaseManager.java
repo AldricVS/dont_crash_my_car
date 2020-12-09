@@ -41,7 +41,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     private final String QUERY_SELECT_SCORES = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + KEY_SCORE + " DESC";
 
-    private final String QUERY_DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    //private final String QUERY_DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
 
     public DatabaseManager(Context context) {
@@ -84,7 +84,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
         int scoreBot;
         Random rand = new Random();
         for (int i = 0; i < 30; i++) {
-            scoreBot = rand.nextInt(100000 - 50);
+            scoreBot = rand.nextInt(20000 - 50);
             Log.i(TAG, "Insert score " + scoreBot + " for Player" + i);
             cv.put(KEY_NAME_USER, "Player" + i);
             cv.put(KEY_SCORE, scoreBot);

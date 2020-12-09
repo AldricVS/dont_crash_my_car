@@ -32,14 +32,28 @@ public class ScoresTableActivity extends AppCompatActivity {
     private List<PlayerData> scores = new ArrayList();
     public static final String INTENT_FILTER = "filter";
     public static String EVENTS_FILE_PATH = "";
+    public static final String NAME_INTENT_EXTRA = "G";
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
 
+        Intent intent = getIntent();
         //retrieves the preferences which are about of player playing and his best score
+        String playerName = "Gauthier";
 
+
+        //if database is empty, add 30 random scores from 30 random players
+        if (db.isTableEmpty()) {
+            db.fillTableRandom();
+        }
+        //else we add the current score if this is not the lowest score compared to
+        int doneScore = intent.getIntExtra(GameActivity.SCORE_INTENT_EXTRA,-1);
+        if(doneScore>=0) {
+            processPlayerScore(doneScore);
+        }
+        //displayScores();
     }
 
     /**
@@ -75,7 +89,6 @@ public class ScoresTableActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Event received...");
-            processingPlayerScore();
             displayScores();
 
         }
@@ -91,9 +104,13 @@ public class ScoresTableActivity extends AppCompatActivity {
         finish();
     }
 
-    public void processingPlayerScore(){
+    /**
+     * allows to start the service
+     */
+    public void processPlayerScore(int score){
         Log.d(TAG, "Save score service");
         Intent intent = new Intent(this, SaveScoreService.class);
+        intent.putExtra(GameActivity.SCORE_INTENT_EXTRA,score);
         startService(intent);
     }
     /**
