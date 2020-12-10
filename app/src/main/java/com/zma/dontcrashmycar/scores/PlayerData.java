@@ -2,6 +2,9 @@ package com.zma.dontcrashmycar.scores;
 
 import java.io.Serializable;
 
+/**
+ * This class represents data to display in "ScoresTableActivity" and stored in the database.
+ */
 public class PlayerData implements Serializable {
 
     int id;
@@ -41,10 +44,8 @@ public class PlayerData implements Serializable {
 
     @Override
     public String toString() {
-        return "PlayerData{" +
-                "id=" + id +
-                ", name user='" + name_user + '\'' +
-                ", score=" + score +
-                '}';
+        return  "           "+ id +
+                "               " + name_user +
+                "  :  " + score ;
     }
 }
