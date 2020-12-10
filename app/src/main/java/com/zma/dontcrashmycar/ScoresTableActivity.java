@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,12 +17,10 @@ import com.zma.dontcrashmycar.scores.ListViewAdapter;
 import com.zma.dontcrashmycar.scores.PlayerData;
 import com.zma.dontcrashmycar.scores.SaveScoreService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * class allowing to display the score in the "activity_scores.xml"
- * @author Zacharie
+ * Class allowing to display the score in the "activity_scores.xml" and use the service of our application.
  */
 public class ScoresTableActivity extends AppCompatActivity {
     private static final String TAG = "ScoreTableActivity";
@@ -96,7 +92,7 @@ public class ScoresTableActivity extends AppCompatActivity {
     }
 
     /**
-     *  BroadcastReciever that waits for a signal from SaveScoreService
+     *  BroadcastReceiver that waits for a signal from SaveScoreService
      */
     private BroadcastReceiver scoreReceiver = new BroadcastReceiver() {
 
@@ -125,8 +121,6 @@ public class ScoresTableActivity extends AppCompatActivity {
 
         // Create ListView
         ListView listView = (ListView) findViewById(R.id.Scores_Table);
-        //ArrayAdapter<PlayerData> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores);
         listView.setAdapter(new ListViewAdapter(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores));
-        //listView.setAdapter(arrayAdapter);
     }
 }

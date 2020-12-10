@@ -3,8 +3,7 @@ package com.zma.dontcrashmycar.scores;
 import java.io.Serializable;
 
 /**
- * this class represents data to string in table score and stored in the database
- * @author Zacharie
+ * This class represents data to display in "ScoresTableActivity" and stored in the database.
  */
 public class PlayerData implements Serializable {
 

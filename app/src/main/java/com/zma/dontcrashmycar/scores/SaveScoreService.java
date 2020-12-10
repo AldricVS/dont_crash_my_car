@@ -1,26 +1,23 @@
 package com.zma.dontcrashmycar.scores;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.zma.dontcrashmycar.GameActivity;
-import com.zma.dontcrashmycar.MainActivity;
 import com.zma.dontcrashmycar.R;
 import com.zma.dontcrashmycar.ScoresTableActivity;
 
-import java.io.File;
 
 
 /**
- * @author Zacharie
+ * Allows to do the service, that consists in updating the best score in "SharedPreferences" if necessary,
+ * or in inserting in the SQLite if the score is quite high and launch the "BroadcastReceiver" that
+ * display the table score in the layout.
  */
 public class SaveScoreService extends IntentService {
     private static final String TAG = "SaveScoreService";

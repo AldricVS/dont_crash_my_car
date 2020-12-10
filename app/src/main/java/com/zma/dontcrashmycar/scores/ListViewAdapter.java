@@ -5,10 +5,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
-
 import java.util.List;
 
+/**
+ * This class allows to improve the layout for the "ScoresTableActivity".
+ */
 public class ListViewAdapter extends ArrayAdapter {
     private int color1 = 0xaa002A7C;
     private int color2 = 0xF8A10310;
@@ -25,6 +26,13 @@ public class ListViewAdapter extends ArrayAdapter {
         super(context, resource, objects);
     }
 
+    /**
+     * Alternates the colors of the elements of our "listview" all by pairs of elements.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return one element of this listView
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         if(position % 2 == 0)
