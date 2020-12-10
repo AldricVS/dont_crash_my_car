@@ -25,7 +25,6 @@
             android:layout_height="match_parent"
             android:onClick="returnToMainMenu"
             android:text="Main Menu"
-            android:textColor="#F8A10310"
             android:backgroundTint="#002A7C"
             android:textSize="20dp"
             tools:ignore="MissingConstraints" />
@@ -48,7 +47,6 @@
             android:layout_height="match_parent"
             android:text="Replay"
             android:onClick="returnInGame"
-            android:textColor="#F8A10310"
             android:backgroundTint="#002A7C"
             android:textSize="20dp"
             tools:ignore="MissingConstraints"
@@ -63,7 +61,6 @@
         android:layout_marginTop="80dp"
         android:layout_marginBottom="2dp"
         android:text="Best Race Scores"
-        android:textColor="#F8A10310"
         android:textSize="28dp"
         app:layout_constraintBottom_toTopOf="@+id/Scores_Table"
         app:layout_constraintEnd_toEndOf="parent"
