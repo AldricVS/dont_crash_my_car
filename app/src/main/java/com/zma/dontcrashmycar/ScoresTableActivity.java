@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.zma.dontcrashmycar.scores.DatabaseManager;
+import com.zma.dontcrashmycar.scores.ListViewAdapter;
 import com.zma.dontcrashmycar.scores.PlayerData;
 import com.zma.dontcrashmycar.scores.SaveScoreService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -119,9 +122,11 @@ public class ScoresTableActivity extends AppCompatActivity {
      */
     public void displayScores(){
         List<PlayerData> scores = databaseManager.getAllRows();
+
         // Create ListView
         ListView listView = (ListView) findViewById(R.id.Scores_Table);
-        ArrayAdapter<PlayerData> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores);
-        listView.setAdapter(arrayAdapter);
+        //ArrayAdapter<PlayerData> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores);
+        listView.setAdapter(new ListViewAdapter(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores));
+        //listView.setAdapter(arrayAdapter);
     }
 }

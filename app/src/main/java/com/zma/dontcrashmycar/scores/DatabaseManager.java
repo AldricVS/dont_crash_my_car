@@ -99,16 +99,6 @@ public class DatabaseManager extends SQLiteOpenHelper {
      */
     public long retrieveIdLowestScore(){
         SQLiteDatabase db = getReadableDatabase();
-        /*
-        String queryIdLowestScore = "SELECT " + KEY_ID + " FROM " + TABLE_NAME + " GROUP BY " + KEY_SCORE +" LIMIT 1";
-        Cursor cursorResult = db.rawQuery(queryIdLowestScore, null);
-        if (cursorResult != null)
-            cursorResult.moveToFirst();
-
-        int IdLowestScore = cursorResult.getInt(0);
-        db.close();
-        return IdLowestScore;
-        */
 
         //we want to get only 1 score row that have the lowest score in the database
         String queryLowestScoreID = "SELECT " + KEY_ID + " FROM " + TABLE_NAME + " WHERE " + KEY_SCORE + " IN " +
@@ -161,15 +151,17 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
         if (cursorResult != null) {
             //check if have any result
+            int index = 1;
             if (cursorResult.moveToFirst()) {
                 //go through all rows and extract event from it
                 do {
                     PlayerData playerData = new PlayerData(
-                            cursorResult.getInt(0),
+                            index,
                             cursorResult.getString(1),
                             cursorResult.getInt(2)
                     );
                     list.add(playerData);
+                    index++;
                 } while (cursorResult.moveToNext());
             }
         }

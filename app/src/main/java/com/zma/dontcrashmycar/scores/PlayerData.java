@@ -45,8 +45,8 @@ public class PlayerData implements Serializable {
 
     @Override
     public String toString() {
-        return "Le joueur : " +
-                "'" + name_user + '\'' +
-                "a obtenu le score : " + score ;
+        return  "           "+ id +
+                "               " + name_user +
+                "  :  " + score ;
     }
 }
