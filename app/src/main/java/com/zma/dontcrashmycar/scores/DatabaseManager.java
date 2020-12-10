@@ -60,7 +60,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     /**
      * test if the table is empty
-     * @return boolean : true if the table is empty, false else
+     * @return true if the table is empty, false else
      */
     public boolean isTableEmpty() {
         return getNumberRows() == 0;
@@ -68,7 +68,7 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     /**
      * look how many rows the table "scores" get
-     * @return long : number of row in the table
+     * @return the number of row in the table
      */
     public long getNumberRows(){
         SQLiteDatabase db = getReadableDatabase();
@@ -76,15 +76,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     /**
-     * initializes the data table with random scores assigned to bot
+     * Initializes the data table with scores assigned to bot
      */
-    public void fillTableRandom() {
+    public void fillTable() {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         int scoreBot;
-        Random rand = new Random();
         for (int i = 0; i < 30; i++) {
-            scoreBot = rand.nextInt(20000 - 50);
+            scoreBot = i * 200;
             Log.i(TAG, "Insert score " + scoreBot + " for Player" + i);
             cv.put(KEY_NAME_USER, "Player" + i);
             cv.put(KEY_SCORE, scoreBot);
@@ -95,11 +94,12 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     /**
-     * get the id of the lowest score in the table "scores"
-     * @return int : the id of the lowest score
+     * Get the id of the lowest score in the table "scores". If 2 scores or more are the same, the oldest in the database will be returned.
+     * @return the id of the lowest score
      */
-    public int retrieveIdLowestScore(){
-        SQLiteDatabase db = getWritableDatabase();
+    public long retrieveIdLowestScore(){
+        SQLiteDatabase db = getReadableDatabase();
+        /*
         String queryIdLowestScore = "SELECT " + KEY_ID + " FROM " + TABLE_NAME + " GROUP BY " + KEY_SCORE +" LIMIT 1";
         Cursor cursorResult = db.rawQuery(queryIdLowestScore, null);
         if (cursorResult != null)
@@ -108,22 +108,51 @@ public class DatabaseManager extends SQLiteOpenHelper {
         int IdLowestScore = cursorResult.getInt(0);
         db.close();
         return IdLowestScore;
+        */
+
+        //we want to get only 1 score row that have the lowest score in the database
+        String queryLowestScoreID = "SELECT " + KEY_ID + " FROM " + TABLE_NAME + " WHERE " + KEY_SCORE + " IN " +
+                                        "(SELECT MIN(" + KEY_SCORE + ") FROM " + TABLE_NAME + ") ORDER BY " + KEY_ID + " LIMIT 1";
+
+        return DatabaseUtils.longForQuery(db, queryLowestScoreID, null);
     }
 
     /**
-     * replace the lowest score by the score of our player if it is higher than the minimum score
+     * @param rowID the id of the row that we want to get the score
+     * @return the score contained in the database at this row
      */
-    public void fillTableOneCarRacing(String name, int score) {
-        int idLowestScore = retrieveIdLowestScore();
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_NAME + " SET " + KEY_NAME_USER + "=" + name + " WHERE " + KEY_ID + "=" + idLowestScore);
-        db.execSQL("UPDATE " + TABLE_NAME + " SET " + KEY_SCORE + "=" + score + " WHERE " + KEY_ID + "=" + idLowestScore);
-        db.close();
+    public long getSpecificScore(long rowID){
+        SQLiteDatabase db = getReadableDatabase();
+        String queryGetScore = "SELECT " + KEY_SCORE + " FROM " + TABLE_NAME + " WHERE " + KEY_ID + "=" + rowID;
+        return DatabaseUtils.longForQuery(db, queryGetScore, null);
     }
 
     /**
-     * get all scores in the table "scoreManager".
-     * @return list : a list of all scores to the table
+     * Replace the lowest score by the score of our player if it is higher than the minimum score
+     * @param name the name of the player
+     * @param score the score to eventually insert
+     * @return if score is inserted or not
+     */
+    public boolean insertNewScore(String name, int score) {
+        //first, check if the score is grater than the minimum score in the database
+        long idLowestScore = retrieveIdLowestScore();
+        long lowestScore = getSpecificScore(idLowestScore);
+        if(score >= lowestScore){
+            Log.i(TAG, "new score : " + score);
+            SQLiteDatabase db = getWritableDatabase();
+            //instead of erasing row and add a new one, update information of the lowest score row (replace name and score)
+            db.execSQL("UPDATE " + TABLE_NAME + " SET " + KEY_NAME_USER + "='" + name + "' WHERE " + KEY_ID + "=" + idLowestScore);
+            db.execSQL("UPDATE " + TABLE_NAME + " SET " + KEY_SCORE + "=" + score + " WHERE " + KEY_ID + "=" + idLowestScore);
+            db.close();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * Get all scores in the table "scoreManager" and add all in a custom list
+     * @return a list of all scores to the table
      */
     public List<PlayerData> getAllRows() {
         List<PlayerData> list = new ArrayList<>();
@@ -149,20 +178,14 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     /**
-     * retrieve the best score of player in playing
-     * @param name
-     * @return int : best score of player in playing
+     * retrieve the best score of player that is playing now
+     * @param name the name of the player to get best score
+     * @return the player's best score
      */
-    public int getBestScorePlayer(String name){
-        SQLiteDatabase db = getWritableDatabase();
-        String queryBestScorePlayer = "SELECT " + KEY_SCORE + " FROM " + TABLE_NAME + " WHERE " + KEY_NAME_USER + "=" + name;
-        Cursor cursorResult = db.rawQuery(queryBestScorePlayer, null);
-        if (cursorResult != null)
-            cursorResult.moveToFirst();
-
-        int bestScorePlayer = cursorResult.getInt(0);
-        db.close();
-        return bestScorePlayer;
+    public long getBestScoreOfPlayer(String name){
+        SQLiteDatabase db = getReadableDatabase();
+        String queryBestScoreOfPlayer = "SELECT " + KEY_SCORE + " FROM " + TABLE_NAME + " WHERE " + KEY_NAME_USER + "=" + name;
+        return DatabaseUtils.longForQuery(db, queryBestScoreOfPlayer, null);
     }
 
 }

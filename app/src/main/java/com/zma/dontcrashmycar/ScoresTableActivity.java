@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,6 @@ import com.zma.dontcrashmycar.scores.DatabaseManager;
 import com.zma.dontcrashmycar.scores.PlayerData;
 import com.zma.dontcrashmycar.scores.SaveScoreService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,37 +25,52 @@ import java.util.List;
  */
 public class ScoresTableActivity extends AppCompatActivity {
     private static final String TAG = "scoreTableActivity";
-    private SharedPreferences sharedPrefs;
-    private DatabaseManager db = new DatabaseManager(this);
-    private List<PlayerData> scores = new ArrayList();
+    private DatabaseManager databaseManager = new DatabaseManager(this);
     public static final String INTENT_FILTER = "filter";
-    public static String EVENTS_FILE_PATH = "";
-    public static final String NAME_INTENT_EXTRA = "G";
+
+    //Intent extra names for service
+    public static final String SCORE_INTENT_EXTRA = "playerScore";
+
+    //fields in shared preferences
+    public static final String NAME_SHARED_KEY = "playerName";
+    public static final String BEST_SCORE_SHARED_KEY = "bestScore";
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scores);
 
-        Intent intent = getIntent();
-        //retrieves the preferences which are about of player playing and his best score
-        String playerName = "Gauthier";
-
-
         //if database is empty, add 30 random scores from 30 random players
-        if (db.isTableEmpty()) {
-            db.fillTableRandom();
+        if (databaseManager.isTableEmpty()) {
+            databaseManager.fillTable();
         }
-        //else we add the current score if this is not the lowest score compared to
-        int doneScore = intent.getIntExtra(GameActivity.SCORE_INTENT_EXTRA,-1);
-        if(doneScore>=0) {
-            processPlayerScore(doneScore);
+
+        //now, check if we have a score in intent : if it is the case, the player was in game before
+        Intent intent = getIntent();
+        int playerScore = intent.getIntExtra(GameActivity.SCORE_INTENT_EXTRA,-1);
+        //if playerScore is the same as the default value, we know that we don't have any score in the intent
+        if(playerScore >= 0) {
+            processPlayerScore(playerScore);
+        }else{
+            //we don't have to do anything (we came from main menu)
+            displayScores();
         }
-        //displayScores();
     }
 
     /**
-     * allows to return in the game activity
+     * Start the service that will manage the player score.
+     * @param score the score that player obtained during his last game
+     */
+    private void processPlayerScore(int score){
+        Log.d(TAG, "Starting save score service...");
+        Intent intent = new Intent(this, SaveScoreService.class);
+        //don't forget to add the score in the intent
+        intent.putExtra(SCORE_INTENT_EXTRA, score);
+        startService(intent);
+    }
+
+    /**
+     * Start a new game
      */
     public void returnInGame(View view) {
         Intent intent = new Intent(this, GameActivity.class);
@@ -68,56 +81,44 @@ public class ScoresTableActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
         // Register the BroadcastReceiver
-        LocalBroadcastManager.getInstance(this).registerReceiver(scoreReceiver,
-                new IntentFilter(INTENT_FILTER));
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(scoreReceiver, new IntentFilter(INTENT_FILTER));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
         // Unregister the BroadcastReceiver
         LocalBroadcastManager.getInstance(this).unregisterReceiver(scoreReceiver);
-
     }
 
+    /**
+     *  BroadcastReciever that waits for a signal from SaveScoreService
+     */
     private BroadcastReceiver scoreReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Event received...");
+            Log.d(TAG, "Score registration finished. Display scores.");
             displayScores();
-
         }
 
     };
 
     /**
-     * allows to return in the main menu activity
+     * Go back to main menu activity
      */
     public void returnToMainMenu(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-        finish();
     }
 
+
     /**
-     * allows to start the service
-     */
-    public void processPlayerScore(int score){
-        Log.d(TAG, "Save score service");
-        Intent intent = new Intent(this, SaveScoreService.class);
-        intent.putExtra(GameActivity.SCORE_INTENT_EXTRA,score);
-        startService(intent);
-    }
-    /**
-     * retrieve all scores in a list
+     * Retrieve all scores in a list and display them on the screen
      */
     public void displayScores(){
-        scores = db.getAllRows();
+        List<PlayerData> scores = databaseManager.getAllRows();
         // Create ListView
         ListView listView = (ListView) findViewById(R.id.Scores_Table);
         ArrayAdapter<PlayerData> arrayAdapter = new ArrayAdapter<>(ScoresTableActivity.this, android.R.layout.simple_list_item_1, scores);
