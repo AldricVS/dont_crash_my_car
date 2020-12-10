@@ -18,7 +18,7 @@ import com.zma.dontcrashmycar.ScoresTableActivity;
  * @author Zacharie
  */
 public class SaveScoreService extends IntentService {
-    private static final String TAG = "scoreTableActivity";
+    private static final String TAG = "SaveScoreService";
     private SharedPreferences sharedPrefs;
     private DatabaseManager db = new DatabaseManager(this);
     private int bestScore;

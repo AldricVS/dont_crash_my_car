@@ -24,7 +24,7 @@ import java.util.List;
  * @author Zacharie
  */
 public class ScoresTableActivity extends AppCompatActivity {
-    private static final String TAG = "scoreTableActivity";
+    private static final String TAG = "ScoreTableActivity";
     private DatabaseManager databaseManager = new DatabaseManager(this);
     public static final String INTENT_FILTER = "filter";
 
