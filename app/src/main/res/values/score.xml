@@ -1,0 +1,8 @@
+<resources>
+    <integer name="red">0</integer>
+    <integer name="blue">100</integer>
+    <integer name="brown">500</integer>
+    <integer name="pink">1200</integer>
+    <integer name="reverse">2500</integer>
+    <integer name="swag">5000</integer>
+</resources>

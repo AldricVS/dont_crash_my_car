@@ -36,7 +36,7 @@ public class SaveScoreService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         // Get the information from the intent
         if (intent != null) {
-            sharedPrefs = getSharedPreferences(getString(R.string.carUsed), Context.MODE_PRIVATE);
+            sharedPrefs = getSharedPreferences(getString(R.string.prefs_car_key), Context.MODE_PRIVATE);
 
             int oldPlayerScore = intent.getIntExtra(ScoresTableActivity.SCORE_INTENT_EXTRA, -1);
             if (oldPlayerScore == -1) {
