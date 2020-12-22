@@ -42,89 +42,167 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="0"
             android:layout_column="0"
-            android:src="@drawable/car_red"
-            android:id="@+id/carRed"
-            android:tag="red"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_red"
+                android:id="@+id/carRed"
+                android:tag="red"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_red"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carRed"/>
+        </LinearLayout>
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="0"
             android:layout_column="1"
-            android:src="@drawable/car_blue"
-            android:id="@+id/carBlue"
-            android:tag="blue"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_blue"
+                android:id="@+id/carBlue"
+                android:tag="blue"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_blue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_blue"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carBlue"/>
+        </LinearLayout>
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="0"
             android:layout_column="2"
-            android:src="@drawable/car_brown"
-            android:id="@+id/carBrown"
-            android:tag="brown"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_brown"
+                android:id="@+id/carBrown"
+                android:tag="brown"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_brown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_brown"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carBrown"/>
+        </LinearLayout>
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="1"
             android:layout_column="0"
-            android:src="@drawable/car_pink"
-            android:id="@+id/carPink"
-            android:tag="pink"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_pink"
+                android:id="@+id/carPink"
+                android:tag="pink"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_pink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_pink"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carPink"/>
+        </LinearLayout>
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="1"
             android:layout_column="1"
-            android:src="@drawable/car_reverse"
-            android:id="@+id/carReverse"
-            android:tag="reverse"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_reverse"
+                android:id="@+id/carReverse"
+                android:tag="reverse"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_reverse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_reverse"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carReverse"/>
+        </LinearLayout>
 
-        <ImageButton
+        <LinearLayout
             android:layout_width="130dp"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_row="1"
             android:layout_column="2"
-            android:src="@drawable/car_swag"
-            android:id="@+id/carSwag"
-            android:tag="swag"
-            android:contentDescription="Car"
-            android:onClick="selectCar"
-            android:cropToPadding="true"
-            android:orientation="horizontal"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical" >
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/car_swag"
+                android:id="@+id/carSwag"
+                android:tag="swag"
+                android:contentDescription="Car"
+                android:onClick="selectCar"
+                android:cropToPadding="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/textScore_swag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/scoreToUnlock_swag"
+                android:textColor="#FFFFFF"
+                android:textSize="8pt"
+                android:textAlignment="center"
+                app:layout_constraintTop_toBottomOf="@+id/carSwag"/>
+        </LinearLayout>
 
     </GridLayout>
 
