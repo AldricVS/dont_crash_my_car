@@ -24,9 +24,10 @@ public class CarChooserActivity extends AppCompatActivity {
     public final static String CAR_COLOR_REFERENCE = "carColor";
     public final static String CAR_COLOR_DEFAULT = "red";
 
-    GridLayout carLayout;
-    SharedPreferences sharedPrefs;
-    SharedPreferences.Editor editor;
+    private GridLayout carLayout;
+    private SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor editor;
+    private int highScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,22 +42,59 @@ public class CarChooserActivity extends AppCompatActivity {
         resetCarBackground();
         String carColor = sharedPrefs.getString(CAR_COLOR_REFERENCE, CAR_COLOR_DEFAULT);
         drawSelectedCar(carColor);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        highScore = sharedPrefs.getInt(ScoresTableActivity.BEST_SCORE_SHARED_KEY, 1);
     }
 
     /**
      * Called when the user press on an ImageButton to choose a new car
-     * @param view
+     * @param view which image was pressed
      */
     public void selectCar(View view) {
         String imgTag = view.getTag().toString();
         Log.i(TAG, imgTag);
-        resetCarBackground();
-        drawSelectedCar(imgTag);
+        Log.i(TAG, String.valueOf(highScore));
 
-        editor = sharedPrefs.edit();
-        editor.putString(CAR_COLOR_REFERENCE, imgTag);
-        editor.apply();
+        //get the required score to unlock the car
+        int requiredScore;
+        switch (imgTag) {
+            case "red":
+                requiredScore = getResources().getInteger(integer.red);
+                break;
+            case "blue":
+                requiredScore = getResources().getInteger(integer.blue);
+                break;
+            case "brown":
+                requiredScore = getResources().getInteger(integer.brown);
+                break;
+            case "pink":
+                requiredScore = getResources().getInteger(integer.pink);
+                break;
+            case "reverse":
+                requiredScore = getResources().getInteger(integer.reverse);
+                break;
+            case "swag":
+                requiredScore = getResources().getInteger(integer.swag);
+                break;
+            default:
+                //in doubt, let them have the car
+                requiredScore = -1;
+        }
+
+        if (highScore > requiredScore) {
+            //draw the selection
+            resetCarBackground();
+            drawSelectedCar(imgTag);
+
+            //put the choosen car in sharedPrefs
+            editor = sharedPrefs.edit();
+            editor.putString(CAR_COLOR_REFERENCE, imgTag);
+            editor.apply();
+        }
     }
 
     /**
@@ -90,7 +128,7 @@ public class CarChooserActivity extends AppCompatActivity {
 
     /**
      * return to the MainActivity
-     * @param view
+     * @param view button pressed
      */
     public void previous(View view) {
         Intent intent = new Intent(this, MainActivity.class);
