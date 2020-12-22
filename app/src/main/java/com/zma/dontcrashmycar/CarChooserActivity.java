@@ -24,10 +24,10 @@ public class CarChooserActivity extends AppCompatActivity {
     public final static String CAR_COLOR_REFERENCE = "carColor";
     public final static String CAR_COLOR_DEFAULT = "red";
 
-    GridLayout carLayout;
-    SharedPreferences sharedPrefs;
-    SharedPreferences.Editor editor;
-    int highScore;
+    private GridLayout carLayout;
+    private SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor editor;
+    private int highScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
