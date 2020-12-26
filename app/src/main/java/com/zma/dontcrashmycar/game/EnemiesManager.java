@@ -1,6 +1,7 @@
 package com.zma.dontcrashmycar.game;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,7 +29,6 @@ public class EnemiesManager {
     private final float ENEMY_SPEED_BASE = 15;
 
     /**
-     *
      * The speed of an enemy will be speed plus a random number between (-{@code ENEMY_SPEED_THRESHOLD}, {@code ENEMY_SPEED_THRESHOLD})
      */
     private final int ENEMY_SPEED_THRESHOLD = 10;
@@ -55,10 +55,11 @@ public class EnemiesManager {
 
     /**
      * Initializes the manager and create a specific amount of new enemies (i.e the number of enemies that can be on the screen at the same time)
+     *
      * @param activity the activity where enemies will live.
-     * @param layout the layout where add sprites.
+     * @param layout   the layout where add sprites.
      */
-    public EnemiesManager(GameActivity activity, RelativeLayout layout){
+    public EnemiesManager(GameActivity activity, RelativeLayout layout) {
         screenHeight = activity.getScreenHeight();
         screenWidth = activity.getScreenWidth();
         //init the enemies sprite
@@ -67,11 +68,11 @@ public class EnemiesManager {
 
         //go in all layout to get all enemies
         View view;
-        for(int i = 0; i < layout.getChildCount(); i++){
+        for (int i = 0; i < layout.getChildCount(); i++) {
             view = layout.getChildAt(i);
-            if(view instanceof ImageView && "enemy".equals(view.getTag())){
+            if (view instanceof ImageView && "enemy".equals(view.getTag())) {
                 //we have found an enemy, set all his properties and add it to the enemy list
-                ImageView enemyImage = (ImageView)view;
+                ImageView enemyImage = (ImageView) view;
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
                 enemyImage.setLayoutParams(layoutParams);
                 //create a new instance of enemy
@@ -79,7 +80,7 @@ public class EnemiesManager {
                 setRandomSpeed(enemy);
                 //set position to random position above screen, and between screen limits
                 resetEnemyPosition(enemy);
-
+                Log.d(TAG, "Enemy pos X : " + enemy.getPositionX() + " pos Y : " + enemy.getPositionY());
                 //add to the layout and list
                 enemies.add(enemy);
             }
@@ -89,30 +90,33 @@ public class EnemiesManager {
     /**
      * Main update call for all enemies.
      */
-    public void updateEnemies(){
+    public void updateEnemies() {
         //move all enemies
-        for (Enemy enemy: enemies) {
+        for (Enemy enemy : enemies) {
             enemy.update();
             //if enemy is at bottom of the screen, put it back to top at random position and speed
-            if(enemy.isUnderScreen()){
+            if (enemy.isUnderScreen()) {
                 resetEnemyPosition(enemy);
                 setRandomSpeed(enemy);
             }
         }
     }
 
-    public boolean isThereCollision(PlayerController playerController){
+    public boolean isThereCollision(PlayerController playerController) {
         float playerPosX = playerController.getImageView().getX();
         float playerPosY = playerController.getImageView().getY();
-        for(Enemy enemy : enemies){
+        for (Enemy enemy : enemies) {
             float enemyPosX = enemy.getImageView().getX();
             float enemyPosY = enemy.getImageView().getY();
 
             //we don't want to be cruel with the player, we have some pixels of tolerance
-            if(playerPosX + COLLISION_TOLERANCE < enemyPosX + spriteWidth - COLLISION_TOLERANCE
-             && playerPosX + spriteWidth - COLLISION_TOLERANCE > enemyPosX + COLLISION_TOLERANCE
-             && playerPosY + COLLISION_TOLERANCE < enemyPosY + spriteHeight - COLLISION_TOLERANCE
-             && playerPosY + spriteHeight - COLLISION_TOLERANCE > enemyPosY + COLLISION_TOLERANCE){
+            if (playerPosX + COLLISION_TOLERANCE < enemyPosX + spriteWidth - COLLISION_TOLERANCE
+                    && playerPosX + spriteWidth - COLLISION_TOLERANCE > enemyPosX + COLLISION_TOLERANCE
+                    && playerPosY + COLLISION_TOLERANCE < enemyPosY + spriteHeight - COLLISION_TOLERANCE
+                    && playerPosY + spriteHeight - COLLISION_TOLERANCE > enemyPosY + COLLISION_TOLERANCE) {
+                Log.d(TAG, "COLLISION WITH ENEMY ! (player posX = " + playerPosX + " posY = " + playerPosY +
+                        " spriteWidth = " + spriteWidth + " spriteHeight = " + spriteHeight + ")");
+                Log.d(TAG, "Enemy posX = " + enemyPosX + " posY = " + enemyPosY);
                 return true;
             }
         }
@@ -122,7 +126,7 @@ public class EnemiesManager {
     /**
      * Multiply the global enemy speed by {@link EnemiesManager#ENEMY_SPEED_MULTIPLIER}
      */
-    public void increaseEnemySpeed(){
+    public void increaseEnemySpeed() {
         currentEnemySpeed *= ENEMY_SPEED_MULTIPLIER;
     }
 
@@ -130,9 +134,10 @@ public class EnemiesManager {
     /**
      * Set a random speed for an enemy.
      * This speed is between (ENEMY_SPEED_BASE - ENEMY_SPEED_THRESHOLD) and (ENEMY_SPEED_BASE + ENEMY_SPEED_THRESHOLD)
+     *
      * @param enemy the enemy we want to change speed
      */
-    private void setRandomSpeed(Enemy enemy){
+    private void setRandomSpeed(Enemy enemy) {
         //Set a random speed between -ENEMY_SPEED_THRESHOLD and ENEMY_SPEED_THRESHOLD
         float speedModifier = random.nextFloat() * ENEMY_SPEED_THRESHOLD;
         speedModifier *= random.nextBoolean() ? 1 : -1;
@@ -141,16 +146,17 @@ public class EnemiesManager {
 
     /**
      * Set the position of the enemy above screen. Used when enemy has reached bottom of the screen
+     *
      * @param enemy the enemy to ch
      */
-    private void resetEnemyPosition(Enemy enemy){
+    private void resetEnemyPosition(Enemy enemy) {
         // We don't want to have an enemy that go through another,
         // so we have to check the randomly-generated X position in order to avoid this
 
         float positionX;
-        do{
+        do {
             positionX = random.nextFloat() * (screenWidth - spriteWidth);
-        }while(isEnemyInTheAxis(positionX, enemy));
+        } while (isEnemyInTheAxis(positionX, enemy));
 
         float positionY = random.nextFloat() * (-screenHeight * 2) - spriteHeight;
         enemy.setPosition(positionX, positionY);
@@ -161,8 +167,9 @@ public class EnemiesManager {
 
     /**
      * Checks if an enemy is in the X axis specified
+     *
      * @param positionX the coordinate to check
-     * @param enemy the enemy who want to change position
+     * @param enemy     the enemy who want to change position
      * @return
      */
     private boolean isEnemyInTheAxis(float positionX, Enemy enemy) {
@@ -172,11 +179,11 @@ public class EnemiesManager {
          * So, position is not valid if
          *      positionX > otherEnemy.posX - spriteWidth AND positionX < otherEnemy.posX + spriteWidth
          */
-        for(Enemy e : enemies){
+        for (Enemy e : enemies) {
             //we don't care about the enemy who want to set his new position
-            if(e != enemy){
+            if (e != enemy) {
                 float otherPositionX = e.getPositionX();
-                if(positionX > otherPositionX - spriteWidth && positionX < otherPositionX + spriteWidth){
+                if (positionX > otherPositionX - spriteWidth && positionX < otherPositionX + spriteWidth) {
                     //problem with an enemy
                     return true;
                 }
@@ -189,11 +196,12 @@ public class EnemiesManager {
 
     /**
      * Generate a random number between two limits (inclusive)
+     *
      * @param min the lowest value that can be returned
      * @param max the largest value that can be returned
      * @return a float between {@code min} and {@code max}
      */
-    private float randomBetween(float min, float max){
+    private float randomBetween(float min, float max) {
         return random.nextFloat();
     }
 }
