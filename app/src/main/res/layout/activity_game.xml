@@ -6,6 +6,35 @@
     tools:context=".GameActivity"
     android:id="@+id/frameLayout">
 
+    <!--Enemies-->
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/car_reverse"
+        android:tag="enemy"
+        android:scaleType="fitXY"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/car_reverse"
+        android:tag="enemy"
+        android:scaleType="fitXY"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/car_reverse"
+        android:tag="enemy"
+        android:scaleType="fitXY"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/car_reverse"
+        android:tag="enemy"
+        android:scaleType="fitXY"/>
+
 
 
     <ImageView
