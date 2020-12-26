@@ -1,6 +1,7 @@
 package com.zma.dontcrashmycar.game;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -56,30 +57,32 @@ public class EnemiesManager {
      * Initializes the manager and create a specific amount of new enemies (i.e the number of enemies that can be on the screen at the same time)
      * @param activity the activity where enemies will live.
      * @param layout the layout where add sprites.
-     * @param numberOfEnemies the number of enemies to create.
      */
-    public EnemiesManager(GameActivity activity, RelativeLayout layout, int numberOfEnemies){
+    public EnemiesManager(GameActivity activity, RelativeLayout layout){
         screenHeight = activity.getScreenHeight();
         screenWidth = activity.getScreenWidth();
         //init the enemies sprite
-        Drawable enemyDrawable = activity.getDrawable(R.drawable.car_reverse);
         spriteWidth = activity.getSpriteWidth();
         spriteHeight = activity.getSpriteHeight();
-        for(int i = 0; i < numberOfEnemies; i++){
-            ImageView enemyImage = new ImageView(activity);
-            enemyImage.setImageDrawable(enemyDrawable);
-            enemyImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
-            enemyImage.setLayoutParams(layoutParams);
-            //create a new instance of enemy
-            Enemy enemy = new Enemy(enemyImage, screenWidth, screenHeight);
-            setRandomSpeed(enemy);
-            //set position to random position above screen, and between screen limits
-            resetEnemyPosition(enemy);
 
-            //add to the layout and list
-            enemies.add(enemy);
-            layout.addView(enemyImage);
+        //go in all layout to get all enemies
+        View view;
+        for(int i = 0; i < layout.getChildCount(); i++){
+            view = layout.getChildAt(i);
+            if(view instanceof ImageView && "enemy".equals(view.getTag())){
+                //we have found an enemy, set all his properties and add it to the enemy list
+                ImageView enemyImage = (ImageView)view;
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(spriteWidth, spriteHeight);
+                enemyImage.setLayoutParams(layoutParams);
+                //create a new instance of enemy
+                Enemy enemy = new Enemy(enemyImage, screenWidth, screenHeight);
+                setRandomSpeed(enemy);
+                //set position to random position above screen, and between screen limits
+                resetEnemyPosition(enemy);
+
+                //add to the layout and list
+                enemies.add(enemy);
+            }
         }
     }
 

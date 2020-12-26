@@ -46,11 +46,6 @@ public class GameActivity extends AppCompatActivity {
 
     public static final String SCORE_INTENT_EXTRA = "Score";
 
-    /*
-     * This number must be less than screenWidth / spriteWidth, or else enemies can't behavior properly
-     */
-    private final int NUMBER_OF_ENEMIES = 4;
-
 
     /*APP LIFECYCLE*/
     @Override
@@ -74,7 +69,7 @@ public class GameActivity extends AppCompatActivity {
         backgroundManager = new BackgroundManager(this, relativeLayout, spriteHeight);
         playerController = new PlayerController(this);
         score = new Score();
-        enemiesManager = new EnemiesManager(this, relativeLayout, NUMBER_OF_ENEMIES);
+        enemiesManager = new EnemiesManager(this, relativeLayout);
 
         //hide and disable the pause layout, and start the game thread
         setGameActive(true);
