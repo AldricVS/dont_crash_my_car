@@ -7,8 +7,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.GridLayout;
-import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,17 +31,15 @@ public class CarChooserActivity extends AppCompatActivity {
 
     private GridLayout carLayout;
     private SharedPreferences sharedPrefs;
-    private SharedPreferences.Editor editor;
     private int highScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_carchooser);
-
         carLayout = findViewById(id.carChooser);
+        initCellsSize();
         sharedPrefs = getSharedPreferences(getString(string.prefs_car_key), Context.MODE_PRIVATE);
-        //TODO enpecher la selection base sur le score
 
         //Now, we show which car the player have selected, base on the value from sharedPrefs
         resetCarBackground();
@@ -44,10 +47,53 @@ public class CarChooserActivity extends AppCompatActivity {
         drawSelectedCar(carColor);
     }
 
+
+
+    /**
+     * Define the size of each cell of the grid depending on the size of the grid layout
+     */
+    private void initCellsSize() {
+        //we need to wait until the layout is finally drawn in order to get the grid measurements
+        carLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.d(TAG, "Layout drawn ! Changing cell sizes...");
+                int carLayoutWidth = carLayout.getMeasuredWidth();
+                int carLayoutHeight = carLayout.getMeasuredHeight();
+
+                //we want a 3x2 grid
+                int cellWidth = carLayoutWidth / 3;
+                int cellHeight = carLayoutHeight / 2;
+
+                //apply those dimensions to all Linear in the car layout
+                View subLayout;
+                //each cell of the grid is filled with one image view and one text view (in this order)
+                for (int i = 0; i < carLayout.getChildCount(); i++) {
+                    subLayout = carLayout.getChildAt(i);
+                    if (subLayout instanceof LinearLayout) { // security check
+                        ViewGroup.LayoutParams layoutParams = subLayout.getLayoutParams();
+                        layoutParams.width = cellWidth;
+                        layoutParams.height = cellHeight;
+                        subLayout.setLayoutParams(layoutParams);
+                    }
+                }
+                //we don't have to check this event anymore
+                carLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         highScore = sharedPrefs.getInt(ScoresTableActivity.BEST_SCORE_SHARED_KEY, 1);
+        initHighScoreText();
+    }
+
+    private void initHighScoreText(){
+        TextView textView = findViewById(id.userMaxScore);
+        textView.setText("Current high score : " + highScore);
     }
 
     /**
@@ -63,22 +109,22 @@ public class CarChooserActivity extends AppCompatActivity {
         int requiredScore;
         switch (imgTag) {
             case "red":
-                requiredScore = getResources().getInteger(integer.red);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_red);
                 break;
             case "blue":
-                requiredScore = getResources().getInteger(integer.blue);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_blue);
                 break;
             case "brown":
-                requiredScore = getResources().getInteger(integer.brown);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_brown);
                 break;
             case "pink":
-                requiredScore = getResources().getInteger(integer.pink);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_pink);
                 break;
             case "reverse":
-                requiredScore = getResources().getInteger(integer.reverse);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_reverse);
                 break;
             case "swag":
-                requiredScore = getResources().getInteger(integer.swag);
+                requiredScore = getResources().getInteger(integer.scoreToUnlock_swag);
                 break;
             default:
                 //in doubt, let them have the car
@@ -90,10 +136,13 @@ public class CarChooserActivity extends AppCompatActivity {
             resetCarBackground();
             drawSelectedCar(imgTag);
 
-            //put the choosen car in sharedPrefs
-            editor = sharedPrefs.edit();
+            //put the chosen car in sharedPrefs
+            SharedPreferences.Editor editor = sharedPrefs.edit();
             editor.putString(CAR_COLOR_REFERENCE, imgTag);
             editor.apply();
+        }else{
+            // show to user that he has not enough points
+            Toast.makeText(this, "You don't have reach the required score to get this car color", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -101,11 +150,16 @@ public class CarChooserActivity extends AppCompatActivity {
      * Set the background to DarkGrey for all element in carLayout
      */
     private void resetCarBackground() {
-        View carView;
-        for (int i = 0; i<carLayout.getChildCount(); i++) {
-            carView = carLayout.getChildAt(i);
-            if (carView instanceof ImageButton) {
-                carView.setBackgroundColor(Color.DKGRAY);
+        View subLayout;
+        //each cell of the grid is filled with one image view and one text view (in this order)
+        for (int i = 0; i < carLayout.getChildCount(); i++) {
+            subLayout = carLayout.getChildAt(i);
+            if (subLayout instanceof LinearLayout) { // security check
+                //find the real image in the layout (the image is always the first element in the layout)
+                View carImage = ((LinearLayout) subLayout).getChildAt(0);
+                if(carImage instanceof ImageView){
+                    carImage.setBackgroundColor(Color.DKGRAY);
+                }
             }
         }
     }
@@ -115,12 +169,17 @@ public class CarChooserActivity extends AppCompatActivity {
      * @param selectedCar the car to be shown in Green
      */
     private void drawSelectedCar(String selectedCar) {
-        View carView;
-        for (int i = 0; i<carLayout.getChildCount(); i++) {
-            carView = carLayout.getChildAt(i);
-            if (carView instanceof ImageButton) {
-                if (carView.getTag().equals(selectedCar)) {
-                    carView.setBackgroundColor(Color.GREEN);
+        View subLayout;
+        //each cell of the grid is filled with one image view and one text view (in this order)
+        for (int i = 0; i < carLayout.getChildCount(); i++) {
+            subLayout = carLayout.getChildAt(i);
+            if (subLayout instanceof LinearLayout) { // security check
+                //find the real image in the layout (the image is always the first element in the layout)
+                View carImage = ((LinearLayout) subLayout).getChildAt(0);
+                if(carImage instanceof ImageView){
+                    if (carImage.getTag().equals(selectedCar)) {
+                        carImage.setBackgroundColor(Color.GREEN);
+                    }
                 }
             }
         }
