@@ -54,6 +54,7 @@ public class ScoresTableActivity extends AppCompatActivity {
             //we don't have to do anything (we came from main menu)
             displayScores();
         }
+        databaseManager.close();
     }
 
     /**

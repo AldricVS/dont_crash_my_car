@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -12,9 +14,13 @@ import android.widget.TextView;
 
 import com.zma.dontcrashmycar.game.BackgroundManager;
 import com.zma.dontcrashmycar.game.EnemiesManager;
+import com.zma.dontcrashmycar.game.GameState;
 import com.zma.dontcrashmycar.game.PlayerController;
 import com.zma.dontcrashmycar.game.Score;
 import com.zma.dontcrashmycar.helpers.ScreenCalculator;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class GameActivity extends AppCompatActivity {
@@ -35,11 +41,10 @@ public class GameActivity extends AppCompatActivity {
 
     private int spriteWidth;
     private int spriteHeight;
-    
-    private int hitboxWidth;
-    private int hitboxHeight;
 
-    private GameThread gameThread;
+    private Handler handler = new Handler();
+    private Timer timer;
+    private GameState currentGameState;
     private boolean isPlaying = false;
 
     private final int TIME_BETWEEN_FRAMES = 16;
@@ -52,9 +57,9 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        relativeLayout = (RelativeLayout)findViewById(R.id.frameLayout);
-        uiLayout = (LinearLayout)findViewById(R.id.ui_layout);
-        pauseLayout = (LinearLayout)findViewById(R.id.pause_layout);
+        relativeLayout = (RelativeLayout) findViewById(R.id.frameLayout);
+        uiLayout = (LinearLayout) findViewById(R.id.ui_layout);
+        pauseLayout = (LinearLayout) findViewById(R.id.pause_layout);
         scoreTextView = (TextView) findViewById(R.id.scoreTextView);
 
         //we have to keep user from changing phone orientation (only portrait mode)
@@ -72,13 +77,15 @@ public class GameActivity extends AppCompatActivity {
         enemiesManager = new EnemiesManager(this, relativeLayout);
 
         //hide and disable the pause layout, and start the game thread
-        setGameActive(true);
+        setGameState(GameState.PLAY);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        setGameActive(false);
+        if(currentGameState == GameState.PLAY){
+            setGameState(GameState.PAUSE);
+        }
     }
 
     @Override
@@ -94,7 +101,9 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        setGameActive(false);
+        if(currentGameState == GameState.PLAY){
+            setGameState(GameState.PAUSE);
+        }
     }
 
     /**
@@ -109,24 +118,82 @@ public class GameActivity extends AppCompatActivity {
      * Set all behavior relative to the game pause and play.
      * It will manage game thread state and pause layout visibility.
      * If game is already in the right state, nothing will happen
-     * @param active if the game has to be active or not
+     * @param isActive if the game has to be isActive or not
+     * @deprecated use {@link GameActivity#setGameState(GameState)} instead
      */
-    private void setGameActive(boolean active){
+    private void setGameActive(boolean isActive) {
         //check if the pause state is not already set
-        if(active != isPlaying){
-            //if active == false, this will also stop the current thread
-            isPlaying = active;
-            if(active){
+        if (isActive != isPlaying) {
+            //if isActive == false, this will also stop the current thread
+            isPlaying = isActive;
+            if (isActive) {
+                //change the ui layout and enable the player controller
                 uiLayout.setVisibility(View.VISIBLE);
                 pauseLayout.setVisibility(View.INVISIBLE);
                 playerController.enableSensors();
-                gameThread = new GameThread();
-                gameThread.start();
-            }else{
+                //start a loop for the game with no delay and 16 milliseconds between each iteration (60 fps)
+                // ==> see inner classes GameTask and GameThread
+                timer.schedule(new GameTask(), 0, TIME_BETWEEN_FRAMES);
+
+            } else {
+                //change the ui layout and disable the player controller (for power saving)
                 uiLayout.setVisibility(View.INVISIBLE);
                 pauseLayout.setVisibility(View.VISIBLE);
                 playerController.disableSensors();
+                //handle the timer
+                stopTimer();
             }
+        }
+    }
+
+    /**
+     * Set all behavior relative to the game pause and play.
+     * It will manage game thread state and pause layout visibility.
+     * If game is already in the right state, nothing will happen
+     *
+     * @param gameState the state of the game, either GameState.PLAY or GameState.PAUSE or GameState.QUIT
+     */
+    private void setGameState(GameState gameState) {
+        if (gameState != currentGameState) {
+            currentGameState = gameState;
+            switch (gameState) {
+                case PLAY:
+                    //change the ui layout and enable the player controller
+                    uiLayout.setVisibility(View.VISIBLE);
+                    pauseLayout.setVisibility(View.INVISIBLE);
+                    playerController.enableSensors();
+                    //start a loop for the game with no delay and 16 milliseconds between each iteration (60 fps)
+                    // ==> see inner classes GameTask and GameThread
+                    timer = new Timer();
+                    timer.schedule(new GameTask(), 0, TIME_BETWEEN_FRAMES);
+                    break;
+                case PAUSE:
+                    //change the ui layout and disable the player controller (for power saving)
+                    uiLayout.setVisibility(View.INVISIBLE);
+                    pauseLayout.setVisibility(View.VISIBLE);
+                    playerController.disableSensors();
+                    //handle the timer
+                    stopTimer();
+                    break;
+                case QUIT:
+                    //just handle the timer
+                    stopTimer();
+                    break;
+                default:
+                    Log.wtf(TAG, "How did you get there with a non-existent game state ?");
+                    throw new IllegalArgumentException("Game state non recognized");
+            }
+        }
+    }
+
+    /**
+     * Stop the game flow by stopping the timer scheduled.
+     * If the timer reference is null, nothing will be done.
+     */
+    private void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
         }
     }
 
@@ -139,18 +206,19 @@ public class GameActivity extends AppCompatActivity {
     /**
      * Suspend the game thread and display the pause screen.
      */
-    public void pauseGame(View view){
-        setGameActive(false);
+    public void pauseGame(View view) {
+        setGameState(GameState.PAUSE);
     }
 
 
     public void resumeGame(View view) {
-        setGameActive(true);
+        setGameState(GameState.PLAY);
     }
 
 
     public void quitGame(View view) {
-        setGameActive(false);
+        Log.d(TAG, "Return to menu.");
+        setGameState(GameState.QUIT);
         //return to menu, without forgetting to kill this game activity
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -175,7 +243,7 @@ public class GameActivity extends AppCompatActivity {
         return spriteHeight;
     }
 
-    public int getSquareSizeY(){
+    public int getSquareSizeY() {
         return backgroundManager.getSquareSizeY();
     }
 
@@ -189,11 +257,11 @@ public class GameActivity extends AppCompatActivity {
      * Tries to detect any collision between the player and enemies.
      * If it happens, go to the score activity creating intent
      */
-    private void checkForCollision(){
-        if(enemiesManager.isThereCollision(playerController)){
+    private void checkForCollision() {
+        if (enemiesManager.isThereCollision(playerController)) {
             //we have to stop the game (i.e the game thread)
-            isPlaying = false;
-
+            setGameState(GameState.QUIT);
+            Log.d(TAG, "Game finished. Final score : " + score.getScore());
             //launch score activity (with score in extras) and destroy the game activity
             Intent intent = new Intent(GameActivity.this, ScoresTableActivity.class);
             intent.putExtra(SCORE_INTENT_EXTRA, score.getScore());
@@ -204,7 +272,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void updateScore() {
         //increase score, it it returns true, that means that we have to increase enemies speed
-        if(score.addScore()){
+        if (score.addScore()) {
             enemiesManager.increaseEnemySpeed();
         }
         //update the score text label
@@ -212,36 +280,41 @@ public class GameActivity extends AppCompatActivity {
         runOnUiThread(() -> scoreTextView.setText(Integer.toString(score.getScore())));
     }
 
-    class GameThread extends Thread {
+    class GameTask extends TimerTask {
+        @Override
+        public void run() {
+            handler.post(new GameThread());
+        }
+    }
+
+    class GameThread implements Runnable {
         @Override
         public void run() {
             /*
              * We will keep track of the elapsed time to do the logic and render a frame.
              * Instead of only sleep for fixed amount of time, we will wait depending on the time needed to render the previous frame
              */
-            long timeStart, deltaTime;
-            while (isPlaying) {
-                //get the time at the beginning of the rendering
-                timeStart = System.nanoTime();
+            //long timeStart, deltaTime;
+            //get the time at the beginning of the rendering
+            //timeStart = System.nanoTime();
 
-                /*logic and rendering*/
-                backgroundManager.nextStep();
-                playerController.updatePlayerMovement();
-                enemiesManager.updateEnemies();
-                checkForCollision();
-                updateScore();
+            /*logic and rendering*/
+            backgroundManager.nextStep();
+            playerController.updatePlayerMovement();
+            enemiesManager.updateEnemies();
+            checkForCollision();
+            updateScore();
 
 
-                //end of rendering : we check the time elapsed during this frame
-                deltaTime = (System.nanoTime() - timeStart) / 1000000;
+            //end of rendering : we check the time elapsed during this frame
+                /*deltaTime = (System.nanoTime() - timeStart) / 1000000;
                 try {
                     if (deltaTime < TIME_BETWEEN_FRAMES) {
                         Thread.sleep(TIME_BETWEEN_FRAMES - deltaTime);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
-            }
+                }*/
         }
     }
 
