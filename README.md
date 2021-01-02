@@ -9,7 +9,7 @@
 - [Background services](#background-services)
 
 # Introduction
-*Don't crash my car* is a little runner type game (like temple run or subway surfers) where the player drive a car and try to avoid all the other ones. The game only ends when the player collides with another car, so the main goal for him is to have the biggest score. This game was made by 3 people :
+*Don't crash my car* is a little runner game (like temple run or subway surfers) where the player drive a car and try to avoid all the other ones. The game only ends when the player collides with another car, so the main goal for him is to have the biggest score. This game was made by 3 people :
 * Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
 * Maxence Hennkein <maxence.hennekein@orange.fr>
 * Zacharie Baril <add e-mail>
